@@ -1,0 +1,100 @@
+<!doctype html>
+<head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>{% block title %}Admin Area{% endblock title %}</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        {% block styling %}
+            {# Load Twitter Bootstrap http://getbootstrap.com/ #}
+            {# With Amelia theme from http://bootswatch.com/amelia/ #}
+            
+            <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+            <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/admin.css') }}">
+        	
+        {% endblock styling %}
+
+
+    </head>
+
+<body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+    <div class="top navbar navbar-default navbar-static-top">
+      <div class="top-content ">
+
+          <ul class="nav navbar-nav">
+            <li><a href="{{ url_for('blog.index') }}">Home</a></li>
+          </ul>
+		  
+          <ul class="nav navbar-nav navbar-right">
+
+            {% if g.user.is_authenticated() %}
+                <li id="logout"><a href="{{ url_for('main.logout') }}">Log out</a></li>
+            {% else %}
+            <li><a href="{{ url_for('admin.index') }}">Users</a></li>
+            {% endif %}
+          </ul>
+      </div>
+    </div>
+      
+    <div id ="content" class="container">
+    	<div class="logo">
+			<a href="{{ url_for('blog.index') }}"><img src="{{ url_for('static', filename='css/img/logo.png') }}" width="196" height="42" alt="Brillante - A Brilliant Website Design" /></a>
+			<p>A very short description about the website goes here. And that's it!</p>
+       </div><!-- .logo -->
+       
+       <div class ="secondnav">
+	    	{% block secondnav %}
+	    	{% if g.user.is_authenticated() %}
+			    <ul class="nav nav-tabs">
+			        <li ><a href="{{ url_for('admin.index') }}">Home |</a></li>
+			    </ul>
+			    {% endif %}
+	    	{% endblock secondnav %}
+    	</div>
+    	
+    	<div class ="main">
+    		{% block errors %}
+    			{% with messages = get_flashed_messages() %}
+  					{% if messages %}
+    					<dl class=flashes>
+    						{% for message in messages %}
+      							<dt>{{ message }}</dt>
+    						{% endfor %}
+   						 </dl>
+  					{% endif %}
+				{% endwith %}
+    		{% endblock errors %}
+    		
+	        {% block content %}
+	        
+	        {% endblock content %}
+        </div>
+        
+
+        
+        <div id ="footer">
+        	<div class="footer-content" />
+		        {% block footer %}
+		        	Just a footer
+		        {% endblock footer %}
+	        </div>
+        </div>
+    </div>
+	<div id="fb-root"></div>
+    {% block javascript %}
+        <script src="{{ url_for('static', filename='jquery-2.0.3.min.js') }}"></script>
+        <script src="{{url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+	<script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/facebook_login.js') }}"></script>
+    {% endblock javascript %}
+    {% block mysripts %}
+
+    {% endblock mysripts %}
+
+    </body>
+</html>    
+    

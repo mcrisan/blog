@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% import 'form_macro.html' as forms %}
+{% block content %}
+  <h2>Edit Post</h2>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  <form action="{{ url_for('blog.edit_post', id = post.id) }}" class="form-horizontal" method=post>
+  {% set f = form.excerpt.process_data(post.excerpt) %}
+  {% set f = form.description.process_data(post.description) %}
+  	{{form.hidden_tag()}}
+ 	{{ forms.render_bootstrap_field_edit(form.title, 'form-control', 'Enter Title', post.title, 'True') }}
+ 	{{ forms.render_bootstrap_field_edit(form.excerpt, 'form-control', 'Enter Short Sumary', post.excerpt,  'True') }}
+ 	{{ forms.render_bootstrap_field_edit(form.description, 'form-control', 'Enter Post', post.description, 'True') }}
+ 	{{ forms.render_bootstrap_field_edit(form.image, 'form-control', 'Enter Image Url', post.image, 'True') }}
+ 	{{ forms.render_bootstrap_field_edit(form.tag, 'form-control', 'Enter Tag', tag_names, 'False') }}
+    {{ forms.render_bootstrap_choice_edit(form.categories, 'checkbox', categories, 'False') }}
+    
+    <div class="form-group">
+        <div class="col-xs-offset-2 col-xs-10">
+          <button type="submit" class="btn btn-primary">Edit Post</button>
+        </div>
+    </div>
+
+  </form>
+{% endblock %}
+
+
+

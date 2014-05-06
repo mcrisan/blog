@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% import 'form_macro.html' as forms %}
+{% block comments %}
+{% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  <form action="{{ url_for('blog.create_post') }}" class="form-horizontal" method=post>
+  	{{form.hidden_tag()}}
+ 	{{ forms.render_bootstrap_field(form.excerpt, 'form-control', 'Enter Short Description', 'True') }}   
+    <div class="form-group">
+        <div class="col-xs-offset-2 col-xs-10">
+          <button type="submit" class="btn btn-primary">Submit Post</button>
+        </div>
+    </div>
+
+  </form>
+{% endblock comments %}

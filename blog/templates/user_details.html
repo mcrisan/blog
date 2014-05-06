@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% import 'post_lists.html' as lists %}
+{% block content %}
+{% if g.user.id == user.id %}
+	<div>	
+		<div class="grid_followers_left">
+		   <div class="row">
+		       <div class="col-md-12"><p>Following</p></div>
+		   </div>
+			{% for user in user.followed %}
+				{% if g.user != user %}
+					<div class="row">
+			            <div class="col-md-8"><a href="{{ url_for('blog.show_user', username=user.username) }}">{{ user.username }}</a></div>
+			            <div class="col-md-4"><a href="{{ url_for('users.unfollow_user', id=user.id) }}">Unfollow</a></div>	
+			        </div>
+			    {% endif %} 
+		    {% endfor %}
+		          
+		    {% if not user.followed[1] %}
+		    	<div class="row">
+		            <div class="col-md-12">You are not following any users</div>			
+		        </div>
+		            
+		    {% endif %}
+		 </div>
+	</div>
+		 <div class="grid_followers_right">
+		    <div class="row">
+		        <div class="col-md-12"><p>Followers</p></div>
+		    </div>
+			{% for user in user.followers %}
+				{% if g.user != user %}
+					<div class="row">
+			            <div class="col-md-8"><a href="{{ url_for('blog.show_user', username=user.username) }}">{{ user.username }}</a></div>
+			        </div>	
+			     {% endif %} 
+		     {% endfor %}
+		      	
+		     {% if not user.followers[1] %}
+		        <div class="row">
+		            <div class="col-md-12">No users are following you</div>			
+		        </div>
+		     {% endif %}
+		 </div>
+		 
+		 	
+	
+	<div class="clear"></div>	
+{% endif %}		
+	{{ lists.build_list("Latest posts from people you follow ", posts.items) }}
+	
+	{% if posts.has_prev %}<a href="{{ url_for('blog.show_user', username =user.username, page = posts.prev_num) }}"><< Newer posts</a>{% else %}<< Newer posts{% endif %} | 
+	{% if posts.has_next %}<a href="{{ url_for('blog.show_user', username =user.username, page = posts.next_num) }}">Older posts >></a>{% else %}Older posts >>{% endif %}
+    
+    
+{% endblock content %}    
+
+

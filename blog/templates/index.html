@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% import 'post_lists.html' as lists %}
+{% block content %}
+
+	{{ lists.build_list("Latest Posts ", posts.items) }}
+
+    {% if posts.has_prev %}<a href="{{ url_for('blog.index', page = posts.prev_num) }}"><< Newer posts</a>{% else %}<< Newer posts{% endif %} | 
+	{% if posts.has_next %}<a href="{{ url_for('blog.index', page = posts.next_num) }}">Older posts >></a>{% else %}Older posts >>{% endif %}
+    
+{% endblock content %}

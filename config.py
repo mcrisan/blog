@@ -1,0 +1,20 @@
+
+CSRF_ENABLED = True
+SECRET_KEY = 'you-will-never-guess'
+app_id = '793960300632535'
+app_secret  = 'd3d5157044ba795094f0742af2dce8ca'
+SQLALCHEMY_DATABASE_URI = 'mysql://root@localhost/flask'
+
+# pagination
+POSTS_PER_PAGE = 10
+
+# email server
+MAIL_SERVER = 'smtp.googlemail.com'
+MAIL_PORT = 465
+MAIL_USE_TLS = False
+MAIL_USE_SSL = True
+MAIL_USERNAME = 'crisan.mariusvlad@gmail.com'
+MAIL_PASSWORD = '19900127'
+
+# administrator list
+ADMINS = ['crisan.mariusvlad@gmail.com']

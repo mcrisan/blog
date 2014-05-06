@@ -1,0 +1,50 @@
+{% macro build_list(header, posts_list) %}
+{% import 'categories_macro.html' as category %}
+
+<h2 class="cufon-h2"><span>{{header}}</span></h2>
+	{% for post in posts_list %}
+		<div class="post">
+			<h3><a href="{{ url_for('blog.post_details', id=post.id) }}">{{post.title}}</a></h3>
+			<div class="cat-date">
+				<span class="posted">Posted in: </span>
+					{{ category.categories(post.categories) }}
+					<!--<em><a href="#">Category One</a></em> -->
+				<span class="sep"></span>
+				<span class="date">Published: 
+					<em>{{momentjs(post.created_at).fromNow()}}</em> 
+				</span>
+			</div><!-- .cat-date -->
+			<div class="post-teaser">
+				<img src="{{ post.image }}" width="142" height="140" alt="" />
+					<div class="text">
+					<p>{{post.excerpt}}</p>
+					<div class="readMore">
+						<span>Author: </span>
+						<em><a href="{{ url_for('blog.show_user', username=post.users.username) }}">{{post.users.username}}  </a></em>
+						{% if (g.user.is_authenticated()) and (g.user != post.users) %}
+							{% if g.user.is_following(post.users) %}
+							<em><a href="{{ url_for('users.unfollow_user', id=post.users.id) }}">Unfollow</a></em><br />				
+							{% else %}
+							<em><a href="{{ url_for('users.follow_user', id=post.users.id) }}">Follow</a></em><br />
+							{% endif %}
+						{% endif %}	
+						<span>Reaction: </span>
+						<em><a href="{{ url_for('blog.post_details', id=post.id) }}#comments">{{post.comments|length}} comments</a></em> <br/>
+						<em>Tags: 
+					   		{% for tag in post.tags %}
+					   			<span class="tag"><a href="{{ url_for('blog.posts_by_tag', tag=tag.name)}}">{{ tag.name }}</a></span>
+							{% else %}
+								This post has no tags. 
+							{% endfor %}
+						</em>
+						<em class="readMoreButton"><a href="{{ url_for('blog.post_details', id=post.id) }}">Read More</a></em>
+					</div><!-- .readMore -->
+				</div><!-- .text -->
+			</div><!-- .post-teaser -->
+		</div><!-- .post -->
+	{% else %}
+		       <p> No posts available </p>   
+    {% endfor %}
+    
+{% endmacro %}    
+    

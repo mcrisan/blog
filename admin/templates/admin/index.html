@@ -1,0 +1,24 @@
+{% extends "layout_admin.html" %}
+
+{% block content %}
+	<div class="grid_users_admin">
+        <div class="row">
+            <div class="grid-head col-md-4"><p>Username</p></div>
+            <div class="grid-head col-md-4"><p>Email</p></div>
+            <div class="grid-head col-md-2"><p>Nr Posts</p></div>
+            <div class="grid-head col-md-2"><p>Nr Comments</p></div>
+        </div>
+	{% for user in users %}
+		<div class="row">
+            <div class="col-md-4"><p>{{ user.username }}</p></div>
+            <div class="col-md-4"><p>{{ user.email }}</p></div>
+			<div class="col-md-2"><p><a href="{{ url_for('admin.posts_for_user', id = user.id ) }}">{{ user.posts|length }}</a></p></div>
+			<div class="col-md-2"><p><a href="{{ url_for('admin.pcomments_by_user', id = user.id) }}">{{ user.comments|length }}</a></p></div>
+            </div>
+            {% endfor %}
+        
+
+    </div>
+	
+  
+{% endblock %}

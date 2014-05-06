@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% import 'form_macro.html' as forms %}
+{% block content %}
+  <h2>Create a new post</h2>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  <form action="{{ url_for('blog.create_post') }}" class="form-horizontal" method=post>
+  	{{form.hidden_tag()}}
+ 	{{ forms.render_bootstrap_field(form.title, 'form-control', 'Enter Title', 'True') }}
+ 	{{ forms.render_bootstrap_field(form.excerpt, 'form-control', 'Enter Short Description', 'True') }}
+ 	{{ forms.render_bootstrap_field(form.description, 'form-control', 'Enter Post', 'True') }}
+ 	{{ forms.render_bootstrap_field(form.image, 'form-control', 'Enter Image Url', 'True') }}
+ 	{{ forms.render_bootstrap_field(form.tag, 'form-control', 'Enter Tag', 'False') }}
+    {{ forms.render_bootstrap_choice(form.categories, 'checkbox', 'False') }}
+    
+    <div class="form-group">
+        <div class="col-xs-offset-2 col-xs-10">
+          <button type="submit" class="btn btn-primary">Submit Post</button>
+        </div>
+    </div>
+
+  </form>
+{% endblock %}
+
+
+

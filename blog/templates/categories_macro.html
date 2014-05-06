@@ -1,0 +1,14 @@
+{% macro categories(categories) %}
+
+
+	{% for category in categories %}
+		{% if loop.last %}
+			<em><a href="{{ url_for('blog.posts_by_category', category=category.name)}}">{{category.name}} </a> </em>
+		{% else %}
+			<em><a href="{{ url_for('blog.posts_by_category', category=category.name)}}">{{category.name}} </a> |</em>
+		{% endif %}	
+	{% else %}
+		 No category  
+    {% endfor %}
+    
+{% endmacro %}    

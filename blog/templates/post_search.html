@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% import 'post_lists.html' as lists %}
+{% block content %}
+
+	{{ lists.build_list("You searched for: " + query, posts) }}
+
+    
+{% endblock content %}

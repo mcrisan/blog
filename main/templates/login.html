@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% import 'form_macro.html' as forms %}
+{% block content %}
+  <h2>Login</h2>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  <form action="{{ url_for('main.login') }}?next={{ request.args.get('next') }}" class="form-horizontal" method=post>
+  	{{form.hidden_tag()}}
+ 	{{ forms.render_bootstrap_field(form.username, 'form-control', 'Enter Username', 'True') }}
+    {{ forms.render_bootstrap_field(form.password, 'form-control', 'Enter Password', 'True') }}
+
+    
+    <div class="form-group">
+        <div class="col-xs-offset-2 col-xs-6">
+          <button type="submit" class="btn btn-primary">Log in</button>
+          <div style="float:right;" class="fb-login-button" data-max-rows="1" data-size="xlarge" data-show-faces="false" data-auto-logout-link="false"></div>
+        </div>
+    </div>
+
+  </form>
+  
+  
+{% endblock %}

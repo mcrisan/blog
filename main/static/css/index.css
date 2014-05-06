@@ -1,0 +1,282 @@
+/* ----------------- Resets ----------------  */
+
+* { margin: 0; padding: 0; outline: 0; }
+
+body {  
+	font: 15px/23px Arial, sans-serif;
+	color: #1a1e27;
+	background-color: #ededed;
+}
+
+img { border: 0; }
+
+.notext, .notext-footer { font-size: 0; line-height: 0; text-indent: -9999px; background-repeat: no-repeat; }
+
+
+/* ----------------- Layout ----------------  */
+
+.top {
+background: transparent url(img/top-bg.gif) repeat-x;
+	color: #fff;
+	position: relative;
+	height: 71px;
+}
+
+.top-content, 
+.logo, 
+.secondnav
+.featured, 
+#content, 
+.footer-content, 
+#bottom {
+	margin: 0 auto;
+	width: 950px;
+}
+
+.main {
+	width: 600px;
+	float: left;
+}
+
+.sidebar {
+	width: 300px;
+	float: right;
+}
+
+#content, .featured, #footer, #bottom {
+	clear: both;
+}
+
+#footer {
+	background: #1a1e27 url(img/footer-bg.jpg) repeat-x 0 0; 
+	border-bottom: 1px solid #fff; 
+	border-top: 1px solid #fff;
+}
+
+/* ----------------- Logo ----------------  */
+
+.logo {
+	height: 148px;
+	overflow: hidden;
+}
+
+.logo img {
+	margin: 62px 22px auto 42px;
+	float: left;
+}
+
+.logo p {
+	margin-top: 67px;
+	width: 229px;
+	float: left;
+	font: italic 15px/17px Georgia, serif;
+	color: #646464;
+}
+
+/* ------------------ Second Nav ------------ */
+.secondnav .nav a:hover
+{
+    background-color:white;
+}
+
+/* ----------------- Content ----------------  */
+.flashes{
+	color:red;
+	text-align:center;
+}
+
+.post {
+	margin-bottom: 40px;
+}
+
+span.sep {
+	text-indent: -9999px;
+	background: url(img/sep.gif) no-repeat center top;
+}
+
+.cat-date {
+	margin-bottom: 10px;
+}
+
+.post-teaser {
+	overflow: hidden;
+}
+
+.post-teaser img {
+	margin: 0 11px 11px 0;
+	border: 1px solid #cacaca;
+	padding: 3px;
+	float: left;
+}
+
+.post-teaser .text{
+	//#padding-left: 160px;
+	
+}
+
+.post-teaser .text p {
+	margin-bottom: 9px;
+	line-height: 23px;
+	min-height: 140px;
+}
+
+.post-teaser2 {
+	overflow: hidden;
+}
+
+.post-teaser2 img {
+	margin: 0 11px 11px 0;
+	border: 1px solid #cacaca;
+	padding: 3px;
+	float: left;
+}
+
+.post-teaser2 .text{
+	//#padding-left: 160px;
+	
+}
+
+.post-teaser2 .text p {
+	margin-bottom: 9px;
+	line-height: 23px;
+	min-height: 300px;
+}
+
+.tags{
+	position:relative;
+
+}
+
+
+.tags .tag1{
+	font-size: 1em;
+}
+
+.tags .tag2{
+	font-size: 2em;
+}
+
+.tags .tag3{
+	font-size: 3em;
+}
+
+.readMore {
+	border-top: 1px solid #bdbdbd;
+	line-height: 17px;
+	padding-top: 9px;
+}
+
+.readMoreButton {
+	background: url(img/readMoreButton.gif) no-repeat;
+	width: 110px;
+	height: 29px;
+	float: right;
+	cursor: pointer;
+	border: 0 none;
+	margin-top: -15px;
+}
+
+.grid_followers_left {
+	float: left;
+	text-align:center;
+}
+
+.grid_followers_right{
+	float: left;
+	text-align:center;
+	margin-left:100px;
+}
+.clear{
+	clear: both;
+}
+
+/* ----------------- Comments ----------------  */
+.comment img {
+	margin: 0 11px 11px 0;
+	border: 1px solid #cacaca;
+	padding: 3px;
+	float: left;
+	width: 50px;
+	height: 50px;
+}
+
+.comment{
+}
+
+.comments{
+	background: white;
+}
+
+.comments hr {
+    border: none;
+    height: 2px;
+    background-color: #333; 
+}
+
+.children {
+	margin-left: 50px; 
+}
+
+com_textarea{
+	margin-left: 50px;
+}
+
+/* ----------------- Fonts ----------------  */
+
+h2.cufon-h2 {
+	margin: 50px 0 25px;
+	font-size: 26px;
+	color: #ffffff;
+	text-transform: uppercase;
+	font-weight: bold;
+}
+
+h2 span {
+	background-color: #1a1e27;
+	padding: 1px 6px;
+	text-align: center;
+}
+
+h3 a {
+	color: #1a1e27;
+	font-size: 25px;
+	text-decoration: none;
+	font-weight: normal;
+}
+
+h4 {
+	color: #646464;
+	font-size: 20px;
+	margin-bottom: -5px;
+	font-weight: normal;
+}
+
+.author em {
+	font: italic 15px Georgia, serif;
+	color: #646464;
+	margin-top: -3px;
+}
+
+.cat-date a, .readMore a {
+	font: italic 14px/20px Georgia, serif;
+	color: #646464;
+	text-decoration: none;
+}
+
+/*-------------------Admin Bar ---------------- */
+#bar {
+    position:relative;
+    top:0;
+    left:0;
+    right:0;
+    height:36px;
+    background: white;
+}
+
+.bar-left {
+    float:left;
+}
+
+.bar-right {
+    float:right;
+}

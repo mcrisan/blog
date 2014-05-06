@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block content %}
+	<div class="grid_users_admin">
+        <div class="row">
+            <div class="grid-head col-md-4"><p>Category</p></div>
+            <div class="grid-head col-md-4"><p>Name</p></div>
+            <div class="grid-head col-md-4"><p>Permissions</p></div>
+        </div>
+	{% for page in pages %}
+		<div class="row">
+            <div class="col-md-4"><p>{{ page.category }}</p></div>
+            <div class="col-md-4"><p>{{ page.name }}</p></div>
+            <div class="col-md-4">
+                <p>
+                    {% for perm in  page.perms %}
+                    <li>{{ perm }}</li> 
+                    {% endfor %}
+                </p>
+            </div>
+            </div>
+            {% endfor %}
+        
+
+    </div>
+	
+  
+{% endblock %}

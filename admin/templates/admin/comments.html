@@ -1,0 +1,27 @@
+{% extends "layout_admin.html" %}
+
+{% block content %}
+ 
+	<div class="grid_users_admin">
+	{% if comments %}
+        <div class="row">
+            <div class="grid-head col-md-1"><p>Id</p></div>
+            <div class="grid-head col-md-7"><p>Comment</p></div>
+            <div class="grid-head col-md-4"><p>Post</p></div>
+        </div>
+	{% for comment in comments %}
+		<div class="row">
+            <div class="col-md-1"><p>{{ comment.id }}</p></div>
+			<div class="col-md-7"><p>{{ comment.comment }}</p></div>
+			<div class="col-md-4"><p><a href="{{ url_for('blog.post_details', id=comment.pcomments.id) }}">{{ comment.pcomments.title }}</a></p></div>
+            </div>
+            {% endfor %}
+      {% else %}
+      <div class="row">
+            <div class="col-md-12"><p>User {{ username }} did not made any comments</p></div>
+      </div> 
+      {% endif %}     
+    </div>
+
+  
+{% endblock %}

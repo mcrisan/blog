@@ -1,0 +1,70 @@
+{% macro render_bootstrap_field(field, class, placeholder, required) %}
+
+<div class="form-group {% if field.errors %} error {% endif %}">
+    <label class="col-lg-2 control-label">{{ field.label }}</label>
+
+    <div class="col-lg-8">
+        {{ field(class=class, placeholder=placeholder, required=required)|safe }}
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <span class="help-inline">{{ error }}</span><br>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}}
+
+{% macro render_bootstrap_choice(field, class, placeholder, required) %}
+
+<div class="form-group {% if field.errors %} error {% endif %}">
+    <label class="col-lg-2 control-label">{{ field.label }}</label>
+
+    <div class="col-lg-8">
+    {% for check in field %}
+    	<div class="checkbox">
+  			 {{ check }} {{ check.label }}
+		</div>
+	{% else %}
+		No Categories
+	{% endfor %}
+    </div>
+</div>
+{% endmacro %}}
+
+{% macro render_bootstrap_field_edit(field, class, placeholder, value, required) %}
+
+<div class="form-group {% if field.errors %} error {% endif %}">
+    <label class="col-lg-2 control-label">{{ field.label }}</label>
+
+    <div class="col-lg-8">
+        {{ field(class=class, placeholder=placeholder, value=value, required=required)|safe }}
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <span class="help-inline">{{ error }}</span><br>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}}
+
+
+{% macro render_bootstrap_choice_edit(field, class, value, required) %}
+
+<div class="form-group {% if field.errors %} error {% endif %}">
+    <label class="col-lg-2 control-label">{{ field.label }}</label>
+
+    <div class="col-lg-8">
+    {% for check in field %}
+    	<div class="checkbox">
+    		{% if value[loop.index -1]==1 %}
+  			 	{{ check(checked="True") }} {{ check.label }}
+  			{% else %}
+  				{{ check }} {{ check.label }}
+  			{% endif %}	
+		</div>
+	{% else %}
+		No Categories
+	{% endfor %}
+    </div>
+</div>
+{% endmacro %}}

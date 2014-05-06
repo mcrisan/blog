@@ -1,0 +1,29 @@
+{% extends "layout_admin.html" %}
+
+{% block content %}
+ 
+	<div class="grid_users_admin">
+	{% if posts %}
+        <div class="row">
+            <div class="grid-head col-md-1"><p>Id</p></div>
+            <div class="grid-head col-md-1"><p>Photo</p></div>
+            <div class="grid-head col-md-3"><p>Title</p></div>
+            <div class="grid-head col-md-6"><p>Excerpt</p></div>
+        </div>
+	{% for post in posts %}
+		<div class="row">
+            <div class="col-md-1"><p>{{ post.id }}</p></div>
+            <div class="col-md-1"><p><img src="{{ post.image }}" width=30 height=30/></p></div>
+			<div class="col-md-3"><p>{{ post.title }}</p></div>
+			<div class="col-md-6"><p>{{ post.excerpt }}</p></div>
+            </div>
+            {% endfor %}
+      {% else %}
+      <div class="row">
+            <div class="col-md-12"><p>User {{ username }} does not have any posts</p></div>
+      </div> 
+      {% endif %}     
+    </div>
+	
+  
+{% endblock %}

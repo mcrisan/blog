@@ -1,0 +1,165 @@
+2014-05-05 12:18:37,437 INFO: microblog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 12:24:03,151 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 12:32:41,502 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 13:00:04,460 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 13:00:16,592 ERROR: Exception on /post/delete/129 [GET] [in c:\Python27\lib\site-packages\flask\app.py:1423]
+Traceback (most recent call last):
+  File "c:\Python27\lib\site-packages\flask\app.py", line 1817, in wsgi_app
+    response = self.full_dispatch_request()
+  File "c:\Python27\lib\site-packages\flask\app.py", line 1477, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "c:\Python27\lib\site-packages\flask\app.py", line 1381, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "c:\Python27\lib\site-packages\flask\app.py", line 1475, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "c:\Python27\lib\site-packages\flask\app.py", line 1461, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "c:\Python27\lib\site-packages\flask_login.py", line 756, in decorated_view
+    elif not current_user.is_authenticated():
+  File "c:\Python27\lib\site-packages\werkzeug\local.py", line 338, in __getattr__
+    return getattr(self._get_current_object(), name)
+  File "c:\Python27\lib\site-packages\werkzeug\local.py", line 297, in _get_current_object
+    return self.__local()
+  File "c:\Python27\lib\site-packages\flask_login.py", line 46, in <lambda>
+    current_user = LocalProxy(lambda: _get_user())
+  File "c:\Python27\lib\site-packages\flask_login.py", line 794, in _get_user
+    current_app.login_manager._load_user()
+  File "c:\Python27\lib\site-packages\flask_login.py", line 363, in _load_user
+    return self.reload_user()
+  File "c:\Python27\lib\site-packages\flask_login.py", line 325, in reload_user
+    user = self.user_callback(user_id)
+  File "c:\Python Workspace\test\main\views.py", line 112, in load_user
+    u = User.query.get(userid)
+  File "c:\Python27\lib\site-packages\sqlalchemy\orm\query.py", line 816, in get
+    return loading.load_on_ident(self, key)
+  File "c:\Python27\lib\site-packages\sqlalchemy\orm\loading.py", line 230, in load_on_ident
+    return q.one()
+  File "c:\Python27\lib\site-packages\sqlalchemy\orm\query.py", line 2361, in one
+    ret = list(self)
+  File "c:\Python27\lib\site-packages\sqlalchemy\orm\query.py", line 2404, in __iter__
+    return self._execute_and_instances(context)
+  File "c:\Python27\lib\site-packages\sqlalchemy\orm\query.py", line 2419, in _execute_and_instances
+    result = conn.execute(querycontext.statement, self._params)
+  File "c:\Python27\lib\site-packages\sqlalchemy\engine\base.py", line 720, in execute
+    return meth(self, multiparams, params)
+  File "c:\Python27\lib\site-packages\sqlalchemy\sql\elements.py", line 317, in _execute_on_connection
+    return connection._execute_clauseelement(self, multiparams, params)
+  File "c:\Python27\lib\site-packages\sqlalchemy\engine\base.py", line 817, in _execute_clauseelement
+    compiled_sql, distilled_params
+  File "c:\Python27\lib\site-packages\sqlalchemy\engine\base.py", line 947, in _execute_context
+    context)
+  File "c:\Python27\lib\site-packages\sqlalchemy\engine\base.py", line 1108, in _handle_dbapi_exception
+    exc_info
+  File "c:\Python27\lib\site-packages\sqlalchemy\util\compat.py", line 185, in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb)
+  File "c:\Python27\lib\site-packages\sqlalchemy\engine\base.py", line 940, in _execute_context
+    context)
+  File "c:\Python27\lib\site-packages\sqlalchemy\engine\default.py", line 435, in do_execute
+    cursor.execute(statement, parameters)
+  File "c:\Python27\lib\site-packages\MySQLdb\cursors.py", line 174, in execute
+    self.errorhandler(self, exc, value)
+  File "c:\Python27\lib\site-packages\MySQLdb\connections.py", line 36, in defaulterrorhandler
+    raise errorclass, errorvalue
+OperationalError: (OperationalError) (2006, 'MySQL server has gone away') 'SELECT users.id AS users_id, users.username AS users_username, users.password AS users_password, users.email AS users_email, users.token AS users_token, users.social AS users_social, users.type AS users_type \nFROM users \nWHERE users.id = %s' (1,)
+2014-05-05 15:26:56,095 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:31:43,430 INFO: blog startup [in main\__init__.py:51]
+2014-05-05 15:35:38,948 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:37:47,533 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:38:29,898 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:39:08,831 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:39:27,505 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:39:35,338 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:48:26,173 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:49:11,262 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:49:42,469 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:50:15,463 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:50:34,210 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:51:07,891 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:52:22,871 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:52:41,957 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:53:04,043 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:54:57,696 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:58:19,721 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 15:58:23,401 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:01:39,263 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:20:22,665 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:22:14,624 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:22:57,647 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:23:58,875 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:49:00,338 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:50:25,859 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:51:37,460 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:52:07,381 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:52:28,792 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:53:08,750 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:53:27,088 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:54:01,546 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:54:13,076 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:55:24,404 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:55:40,361 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:56:41,917 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 16:59:31,375 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 17:00:07,217 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 17:00:58,563 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 17:01:15,904 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 17:49:45,446 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 18:00:22,157 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 18:02:17,164 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 18:02:28,510 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 18:03:08,190 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 18:03:28,921 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-05 18:06:35,895 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 09:21:01,782 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 09:21:02,323 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 10:22:33,736 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 10:25:02,634 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 10:35:20,276 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 10:36:08,450 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 10:41:16,220 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 10:54:35,453 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 10:58:30,869 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 10:58:41,927 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 10:58:56,200 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:26:46,710 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:28:20,187 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:28:20,599 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:31:30,834 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:33:00,561 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:33:45,772 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:34:39,549 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:39:59,411 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:41:04,882 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:41:12,686 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:44:49,719 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:45:02,983 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:46:49,845 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:51:11,640 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:52:56,387 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:53:13,887 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:53:25,026 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:57:06,732 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 11:57:23,219 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 12:10:44,552 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 12:20:30,996 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 12:20:55,872 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 12:21:32,227 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 12:22:20,428 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 12:45:28,563 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 12:45:49,028 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 12:46:03,240 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 14:37:24,509 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 14:44:35,519 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 14:45:15,266 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 14:54:13,721 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 15:03:57,190 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 15:05:47,931 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 15:14:41,384 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 16:02:54,579 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 16:06:12,141 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 16:07:03,460 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 16:08:25,346 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 16:28:09,243 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 16:31:06,536 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 16:31:06,970 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 16:31:34,579 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
+2014-05-06 16:32:15,887 INFO: blog startup [in c:\Python Workspace\test\main\__init__.py:51]
