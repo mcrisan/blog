@@ -9,6 +9,7 @@ from flask.ext.sqlalchemy import Pagination
 from main import app
 from blog.forms import CreatePostForm
 from datetime import datetime
+from elasticsearch import Elasticsearch
 
 
 @blog.route('/')
@@ -64,6 +65,8 @@ def create_post():
         db.session.add(post)  # @UndefinedVariable
         try:
             db.session.commit()  # @UndefinedVariable
+            es = Elasticsearch()
+            es.index(index="post", doc_type='pesan', id=post.id, body=post.serialize2())
             flash(u'Post was succesfully created')  
         except:
             return redirect(url_for('blog.create_post'))
@@ -131,6 +134,9 @@ def edit_post(id):
         post.updated_at = datetime.now()
         try:
             db.session.commit()
+            post2 = post.serialize2()
+            es = Elasticsearch()
+            es.index(index="post", doc_type='pesan', id=post.id, body=post2)
             flash(u'Post was succesfully edited')  
         except:
             return redirect(url_for('blog.edit_post', id = post.id))
@@ -147,7 +153,30 @@ def search():
 
 @blog.route('/search/<query>', methods=['GET', 'POST'])
 def search_results(query): 
-    results = Post.query.whoosh_search(query).all()
+    #results = Post.query.whoosh_search(query).all()
+    es = Elasticsearch()
+    #es.search(index, doc_type, body, params)
+    res = es.search(
+    index='post',
+    doc_type='pesan',
+    body={
+      'size':10,   
+      'query': {
+        'query_string': {
+            "fields" : ["title^5", "excerpt^2", "description"],
+            "query" : query     
+        }
+      }
+    })
+    print("Got %d Hits" % res['hits']['total'])
+    results=[]
+    #print res['hits']['hits']
+    for data in res['hits']['hits']:
+        print(data['_id'])  
+        post = Post.query.get(data['_id'])
+        results.append(post)
+    print results    
+    #return "123"
     return render_template('post_search.html', posts=results, query = query )    
     
 
@@ -158,8 +187,11 @@ def delete_post(id):
     if not post.user_id == current_user.id:
         return redirect(url_for('blog.index')) 
     try:
+        id=post.id
         db.session.delete(post)
         db.session.commit()
+        es = Elasticsearch()
+        es.delete(index="post", doc_type='pesan', id=id)
         flash(u'Post was deleted')  
     except:
         return redirect(url_for('blog.post_details', id = post.id))

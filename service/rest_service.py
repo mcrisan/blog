@@ -4,17 +4,44 @@ from service import service
 from main.models import Post
 from requests import put, get
 import urllib2
+from elasticsearch import Elasticsearch
+from flask_login import current_user
 
 @service.route('/posts', methods = ['GET'])
 def get_posts():
+    es = Elasticsearch()
     posts = Post.query.all()
     post_list =[]
     for post in posts:
-        post2 = post.serialize()
+        post2 = post.serialize2()
+        #res = es.index(index="belajar", doc_type='pesan', id=post.id, body=post2)
         #print post2['title']
         #print post2
         post_list.append(post2)
-    return jsonify( { 'posts': post_list } )
+    json = jsonify( { 'posts': post_list } ).response 
+    json2 ={ 'posts': post_list } 
+    #print(json2)  
+    #res = es.index(index="belajar", doc_type='pesan', id=1, body=json2)
+    #res = es.get(index="belajar", doc_type='pesan', id=1)
+    
+    res = es.search(
+    index='post',
+    doc_type='pesan',
+    body={
+      'query': {
+        'match': {
+          'title': 'Fain Post'
+        }
+      }
+    }
+)
+    print("Got %d Hits" % res['hits']['total'])
+    print res['hits']['hits']
+    #for hit in res['hits']['hits']:
+    #    print( hit["_source"])
+    
+    #print(res['_source'])    
+    return "123"
 
 
 

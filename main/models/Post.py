@@ -1,4 +1,3 @@
-import flask.ext.whooshalchemy as whooshalchemy
 from main import db
 from datetime import datetime
 from main.models.Comments import Comments
@@ -7,7 +6,6 @@ from main.models.AsociateTables import post_tag, post_cat
 
 class Post(db.Model):
     __tablename__ = 'post'
-    __searchable__ = ['title', 'description']
     
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50))
@@ -50,7 +48,21 @@ class Post(db.Model):
            'updated_at' : self.dump_datetime(self.updated_at)
            # This is an example how to deal with Many2Many relations
            #'many2many'  : self.serialize_many2many
-           }    
+           }  
+        
+    def serialize2(self):
+        """Return object data in easily serializeable format"""
+        return {
+           'id'         : self.id,
+           'title'      : self.title,
+           'excerpt'    : self.excerpt,
+           'description': self.description
+           #'image'      : self.image,
+           #'created_at' : self.dump_datetime(self.created_at),
+           #'updated_at' : self.dump_datetime(self.updated_at)
+           # This is an example how to deal with Many2Many relations
+           #'many2many'  : self.serialize_many2many
+           }       
     
     def __repr__(self):
         return '<Post %r>' % self.title

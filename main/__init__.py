@@ -1,7 +1,6 @@
 from flask import Blueprint
 from flask import Flask
 from flask.ext.login import LoginManager
-import flask.ext.whooshalchemy
 from flask_sqlalchemy import SQLAlchemy
 from momentjs import momentjs
 from config import ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
