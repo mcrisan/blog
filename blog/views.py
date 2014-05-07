@@ -10,7 +10,7 @@ from main import app
 from blog.forms import CreatePostForm
 from datetime import datetime
 from elasticsearch import Elasticsearch
-
+import re
 
 @blog.route('/')
 @blog.route('/index', methods = ['GET', 'POST'])
@@ -154,6 +154,8 @@ def search():
 @blog.route('/search/<query>', methods=['GET', 'POST'])
 def search_results(query): 
     #results = Post.query.whoosh_search(query).all()
+    pattern=re.compile("[^\w ']")
+    new_query = pattern.sub('', query)
     es = Elasticsearch()
     #es.search(index, doc_type, body, params)
     res = es.search(
@@ -164,7 +166,7 @@ def search_results(query):
       'query': {
         'query_string': {
             "fields" : ["title^5", "excerpt^2", "description"],
-            "query" : query     
+            "query" : "*" + new_query + "*"     
         }
       }
     })

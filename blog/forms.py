@@ -79,7 +79,7 @@ class CreatePostForm(Form):
     categories = MultiCheckboxField('Categories', choices=cat_choice)
     
     def allowed_file(self,filename):
-        ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+        ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
         return '.' in filename and \
             filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
             
