@@ -15,7 +15,7 @@ def get_posts():
     for post in posts:
         post2 = post.serialize2()
         post_list.append(post2)
-    json = jsonify( { 'posts': post_list } ).response     
+    json = jsonify( { 'posts': post_list } )    
     return json
 
 

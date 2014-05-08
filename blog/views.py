@@ -1,9 +1,10 @@
 import pprint
+import json
 from main import db
 from blog import blog
 from main.models import User, Post, Category, Comments, Tags
 from flask import request, g, redirect, url_for, \
-     render_template, flash
+     render_template, flash, jsonify
 from flask.ext.login import LoginManager, login_required, login_user, logout_user, current_user
 from flask.ext.sqlalchemy import Pagination
 from main import app
@@ -173,7 +174,32 @@ def search_results(query):
         post = Post.query.get(data['_id'])
         results.append(post)    
     return render_template('post_search.html', posts=results, query = query )    
-    
+
+@blog.route('/autocomplete', methods=['GET', 'POST'])
+def autocomplete():
+    data = request.args.get('term');
+    print data
+    es = Elasticsearch()
+    res = es.search(
+    index='post',
+    doc_type='pesan',
+    body={
+      'size':3,   
+      'query': {
+        'query_string': {
+            "fields" : ["title^5", "excerpt^2", "description"],
+            "query" : "*" + data + "*"     
+        }
+      }
+    })
+    list_title =[]
+    for data in res['hits']['hits']: 
+        #print data['_source']['title']
+        list_title.append({
+                           'title'      : data['_source']['title']
+                           } )
+    print list_title    
+    return jsonify( { 'posts': list_title } )    
 
 @blog.route('/post/delete/<id>', methods=['GET', 'POST'])
 @login_required
