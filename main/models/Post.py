@@ -46,8 +46,6 @@ class Post(db.Model):
            'image'      : self.image,
            'created_at' : self.dump_datetime(self.created_at),
            'updated_at' : self.dump_datetime(self.updated_at)
-           # This is an example how to deal with Many2Many relations
-           #'many2many'  : self.serialize_many2many
            }  
         
     def serialize2(self):
@@ -57,11 +55,6 @@ class Post(db.Model):
            'title'      : self.title,
            'excerpt'    : self.excerpt,
            'description': self.description
-           #'image'      : self.image,
-           #'created_at' : self.dump_datetime(self.created_at),
-           #'updated_at' : self.dump_datetime(self.updated_at)
-           # This is an example how to deal with Many2Many relations
-           #'many2many'  : self.serialize_many2many
            }       
     
     def __repr__(self):

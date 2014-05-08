@@ -153,11 +153,9 @@ def search():
 
 @blog.route('/search/<query>', methods=['GET', 'POST'])
 def search_results(query): 
-    #results = Post.query.whoosh_search(query).all()
     pattern=re.compile("[^\w ']")
     new_query = pattern.sub('', query)
     es = Elasticsearch()
-    #es.search(index, doc_type, body, params)
     res = es.search(
     index='post',
     doc_type='pesan',
@@ -170,15 +168,10 @@ def search_results(query):
         }
       }
     })
-    print("Got %d Hits" % res['hits']['total'])
     results=[]
-    #print res['hits']['hits']
-    for data in res['hits']['hits']:
-        print(data['_id'])  
+    for data in res['hits']['hits']: 
         post = Post.query.get(data['_id'])
-        results.append(post)
-    print results    
-    #return "123"
+        results.append(post)    
     return render_template('post_search.html', posts=results, query = query )    
     
 

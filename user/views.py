@@ -5,7 +5,7 @@ from main import db
 from main.models import User
 from flask.ext.login import LoginManager, login_required, login_user, logout_user, current_user
 from main.email import follower_notification, email 
-
+import pprint
 
 @users.route('/test')
 @login_required
@@ -52,3 +52,10 @@ def unfollow_user(id):
         flash(u'User has been removed from your followers list')    
     return redirect(url_for('blog.show_user', username=current_user.username))
  
+@users.route('/user/test/<id>')
+@login_required
+def test_user(id):
+    user= User.query.get(id)
+    data = user.user_stream2().all()
+    pprint.pprint(data)
+    return "123"

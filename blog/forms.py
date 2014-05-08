@@ -31,6 +31,7 @@ class LoginForm(Form):
         self.user = user
         return True
     
+    
 class RegisterForm(Form):
     username = TextField('Username', validators = [Required()])
     password = PasswordField('Password', validators = [Required()])
@@ -86,6 +87,7 @@ class CreatePostForm(Form):
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
         self.post = Post
+        
     def validate(self):
         rv = Form.validate(self)
         if not rv:
@@ -93,9 +95,11 @@ class CreatePostForm(Form):
         if not self.allowed_file(self.image.data):
             self.image.errors.append('Image Type not supported') 
         return True    
+  
     
 class CreateCommentForm(Form):
     comment = TextAreaField('Comment', validators = [Required()])
+
 
 class SearchForm(Form):
     search = TextField('search', validators = [Required()])

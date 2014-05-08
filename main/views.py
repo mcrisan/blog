@@ -14,7 +14,6 @@ from config import app_id, app_secret
 
 @mainapp.route('/login', methods=['GET', 'POST'])
 def login():
-    #if request.method == 'POST':
         form = LoginForm()
         next = request.args.get('next')
         print "your next move="
@@ -76,15 +75,10 @@ def facebook_login():
         user = User.query.filter_by(username=username).first()
         if not user:
             user = User(username, password, email, token, social)
-            #pprint.pprint(token)
-            #try:
-            db.session.add(user)
-            
+            db.session.add(user)           
         else:
             user.token = token 
-        db.session.commit()       
-            #except:
-            #    return "1233"    
+        db.session.commit()          
         login_user(user)    
         pprint.pprint(profile['username'])   
     return redirect(url_for('blog.index')) 

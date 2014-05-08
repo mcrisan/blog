@@ -1,6 +1,9 @@
 from main import db
 from main.models.Post import Post
 from main.models.AsociateTables import followers
+from main.models.Comments import Comments
+
+
 class User(db.Model):
     __tablename__ = "users"   
     id = db.Column(db.Integer, primary_key=True)
@@ -18,6 +21,7 @@ class User(db.Model):
         secondaryjoin = (followers.c.followed_id == id), 
         backref = db.backref('followers', lazy = 'dynamic'), 
         lazy = 'dynamic')
+    
     def __init__(self, username, password, email, type=0, token=None, social=None):
         self.username = username
         self.password = password
@@ -48,6 +52,9 @@ class User(db.Model):
     
     def user_stream(self):
         return Post.query.join(followers, (followers.c.followed_id == Post.user_id)).filter(followers.c.follower_id == self.id).order_by(Post.created_at.desc())
+     
+    def user_stream2(self):
+        return db.session.query( Post.title, Comments.comment ).join(followers, (followers.c.followed_id == Post.user_id)).join(Comments, (Comments.post_id == Post.id)).filter(followers.c.follower_id == self.id).order_by(Post.created_at.desc()) 
        
     def follow(self, user):
         if not self.is_following(user):
