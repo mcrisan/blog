@@ -196,7 +196,8 @@ def autocomplete():
     for data in res['hits']['hits']: 
         #print data['_source']['title']
         list_title.append({
-                           'title'      : data['_source']['title']
+                           'title'      : data['_source']['title'],
+                           'id'      : data['_source']['id']
                            } )
     print list_title    
     return jsonify( { 'posts': list_title } )    

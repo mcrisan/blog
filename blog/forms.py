@@ -45,8 +45,7 @@ class RegisterForm(Form):
         if not rv:
             return False
 
-        user1 = User.query.filter_by(
-            username=self.username.data).first()
+        user1 = User.query.filter_by(username=self.username.data).first()
         #print  user    
         if user1:  
             self.username.errors.append('Username is taken')
