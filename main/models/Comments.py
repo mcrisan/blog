@@ -11,10 +11,14 @@ class Comments(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
     parent_id = db.Column(db.Integer, db.ForeignKey('comments.id'))
+    likes = db.Column(db.Integer)
+    unlikes = db.Column(db.Integer)
     children = db.relationship("Comments", backref="childrenc", remote_side=[id])
     
-    def __init__(self, comment, user_id, post_id, parent_id=None):
+    def __init__(self, comment, user_id, post_id, parent_id=None, likes=0, unlikes=0):
         self.comment = comment
         self.user_id = user_id
         self.post_id = post_id
         self.parent_id = parent_id
+        self.likes = likes
+        self.unlikes = unlikes

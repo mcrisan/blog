@@ -5,10 +5,11 @@
 		  <span>{{ comment.ucomments.username }} - {{comment.created_at.strftime('%Y-%m-%d') }} </span></br>
 		  <span>{{comment.comment }}</span></br>
 		  <div>
-			  <span><a href="#" class="reply" data-parentid ={{comment.id}} data-postid ={{comment.post_id}} >Reply |</a></span>
-			  <span><a href="#" class="like" data-parentid ={{comment.id}} data-postid ={{comment.post_id}} >Like (<span>4</span>)|</a></span>
-			  <span><a href="#" class="unlike" data-parentid ={{comment.id}} data-postid ={{comment.post_id}} >Unlike(<span>0</span>)</a></span>
+			  <span><a href="#" class="reply" data-parentid ={{comment.id}} data-postid ={{comment.post_id}} >Reply | </a></span>
+			  <span><a href="#" class="like" data-id ={{comment.id}} data-postid ={{comment.post_id}} >Like (<span>{{comment.likes}}</span>) | </a></span>
+			  <span><a href="#" class="unlike" data-id ={{comment.id}} data-postid ={{comment.post_id}} >Unlike(<span>{{comment.unlikes}}</span>)</a></span>
 		  </div>
+		  <div class="error flashes"></div>
 		  <div class="form_container"></div>
 	  </div>
 
@@ -21,8 +22,8 @@
 		  <span>{{ comment.ucomments.username }} - {{comment.created_at.strftime('%Y-%m-%d') }} </span></br>
 		  <span>{{comment.comment }}</span></br>
 		  <div>
-			  <span><a href="#" class="like" data-parentid ={{comment.id}} data-postid ={{comment.post_id}} >Like (<span>4</span>)|</a></span>
-			  <span><a href="#" class="unlike" data-parentid ={{comment.id}} data-postid ={{comment.post_id}} >Unlike(<span>0</span>)</a></span>
+			  <span><a href="#" class="like" data-id ={{comment.id}} data-postid ={{comment.post_id}} >Like (<span>{{comment.likes}}</span>) | </a></span>
+			  <span><a href="#" class="unlike" data-id ={{comment.id}} data-postid ={{comment.post_id}} >Unlike(<span>{{comment.unlikes}}</span>)</a></span>
 		  </div>
 	  </div>
 

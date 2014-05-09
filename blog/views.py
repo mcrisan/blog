@@ -108,7 +108,42 @@ def create_comment():
         return render_template('comment.html', comment=comment) 
     else:
         return "-1"
- 
+
+@blog.route('/like_comment', methods=['GET','POST'])
+def like_comment():
+    if current_user.is_authenticated():
+        id_comment = request.form['id_comment']
+        comment = Comments.query.get(id_comment);
+        comment.likes += 1 
+        db.session.commit()
+        print(comment)
+        #try:
+        #    db.session.add(comment) 
+        #    db.session.commit() 
+        #except:
+        #    return "the operation could not be completed "            
+        #return render_template('comment.html', comment=comment) 
+        return '%s' % comment.likes
+    else:
+        return "-1" 
+    
+@blog.route('/unlike_comment', methods=['GET','POST'])
+def unlike_comment():
+    if current_user.is_authenticated():
+        id_comment = request.form['id_comment']
+        comment = Comments.query.get(id_comment);
+        comment.unlikes += 1 
+        db.session.commit()
+        print(comment)
+        #try:
+        #    db.session.add(comment) 
+        #    db.session.commit() 
+        #except:
+        #    return "the operation could not be completed "            
+        #return render_template('comment.html', comment=comment) 
+        return '%s' % comment.unlikes
+    else:
+        return "-1"     
  
 @blog.route('/post/edit/<id>', methods=['GET', 'POST'])
 @login_required

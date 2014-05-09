@@ -1,6 +1,5 @@
 
 $( document ).ready(function() {
-//$('.reply').click( function (event) {
 $('.comments').on("click", '.reply',  function (event) {
 	event.preventDefault();
 	var parent_id = $(this).data('parentid');
@@ -9,7 +8,7 @@ $('.comments').on("click", '.reply',  function (event) {
     var parent = $(this).parents(".comment").first();
     console.log($(this).length);
     if($(parent).find('textarea').length < 1) {
-    	var textarea = $('<textarea>').attr('class','form-control');
+    	var textarea = $('<textarea>').attr({'class' : 'form-control', "required" : "true"});
     	var div = $('<div>').attr('class','col-xs-offset-3 col-lg-9').append($(textarea));
         var button = $('<button>').attr('class','btn btn-primary').text("Send");
         var div_button = $('<div>').attr('class','col-xs-offset-9 col-xs-10').append($(button));
@@ -22,6 +21,10 @@ $('.comments').on("click", '.reply',  function (event) {
     }
     $(button).click( function (event){
     	var text = $(parent).find('textarea').val();
+    	if (text ==""){
+    		$(parent).find(".error").text("You need to enter a message!");
+    		return;
+    	}
         $.ajax({
         type: "POST",
         url: "/create_comment",
@@ -33,17 +36,56 @@ $('.comments').on("click", '.reply',  function (event) {
           	if (data !="-1"){
           		$(parent).append(data);  
           	}else{
-          		div = $('<div>').attr('class','flashes col-xs-offset-3 col-xs-9').text("You need o be logged in!");
-          		$(parent).append($(div));
+          		//div = $('<div>').attr('class','flashes col-xs-offset-3 col-xs-9').text("You need o be logged in!");
+          		//$(parent).append($(div));
+          		$(parent).find(".error").text("You need o be logged in!");
           	}
             }
         });
     });
     		
  });
-
-$('.like').click( function (event) {
+$('.comment').on("click", '.like',  function (event) {
 	event.preventDefault();
+	var mes = $(this).parents(".comment").first().find(".error");
+	var id = $(this).data('id');
+	$this = $(this);
+	console.log(id);
+	$.ajax({
+        type: "POST",
+        url: "/like_comment",
+        data: { id_comment: id} ,
+        cache: false,
+        success: function(data) {
+        	if (data !="-1"){
+        		$($this).find("span").text(data);
+        	}else{
+        		$(mes).text("You need o be logged in!");
+        	}
+        }
+        });
+    		
+ });
+
+$('.comment').on("click", '.unlike',  function (event) {
+	event.preventDefault();
+	var mes = $(this).parents(".comment").first().find(".error");
+	var id = $(this).data('id');
+	$this = $(this);
+	console.log(id);
+	$.ajax({
+        type: "POST",
+        url: "/unlike_comment",
+        data: { id_comment: id} ,
+        cache: false,
+        success: function(data) {
+        	if (data !="-1"){
+        		$($this).find("span").text(data);
+        	}else{
+        		$(mes).text("You need o be logged in!");
+        	}
+        }
+        });
     		
  });
 
