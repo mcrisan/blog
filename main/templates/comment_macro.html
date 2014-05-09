@@ -1,10 +1,29 @@
 {% macro comment(comment) %}
 <hr size="30">
 	  <div class="comment">
-	  		<img src="http://thecontentwrangler.com/wp-content/uploads/2011/08/User.png"  alt="" />
+	  	  <img src="http://thecontentwrangler.com/wp-content/uploads/2011/08/User.png"  alt="" />
 		  <span>{{ comment.ucomments.username }} - {{comment.created_at.strftime('%Y-%m-%d') }} </span></br>
 		  <span>{{comment.comment }}</span></br>
-		  <a href="#" class="reply" data-parentid ={{comment.id}} data-postid ={{comment.post_id}} >Reply</a>
+		  <div>
+			  <span><a href="#" class="reply" data-parentid ={{comment.id}} data-postid ={{comment.post_id}} >Reply |</a></span>
+			  <span><a href="#" class="like" data-parentid ={{comment.id}} data-postid ={{comment.post_id}} >Like (<span>4</span>)|</a></span>
+			  <span><a href="#" class="unlike" data-parentid ={{comment.id}} data-postid ={{comment.post_id}} >Unlike(<span>0</span>)</a></span>
+		  </div>
+		  <div class="form_container"></div>
 	  </div>
 
 {% endmacro %}}	  
+
+{% macro comment_end(comment) %}
+<hr size="30">
+	  <div class="comment">
+	  	  <img src="http://thecontentwrangler.com/wp-content/uploads/2011/08/User.png"  alt="" />
+		  <span>{{ comment.ucomments.username }} - {{comment.created_at.strftime('%Y-%m-%d') }} </span></br>
+		  <span>{{comment.comment }}</span></br>
+		  <div>
+			  <span><a href="#" class="like" data-parentid ={{comment.id}} data-postid ={{comment.post_id}} >Like (<span>4</span>)|</a></span>
+			  <span><a href="#" class="unlike" data-parentid ={{comment.id}} data-postid ={{comment.post_id}} >Unlike(<span>0</span>)</a></span>
+		  </div>
+	  </div>
+
+{% endmacro %}}	

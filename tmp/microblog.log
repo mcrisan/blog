@@ -295,3 +295,8 @@ OperationalError: (OperationalError) (2006, 'MySQL server has gone away') 'SELEC
 2014-05-08 17:17:48,210 INFO: blog startup [in c:\Python Workspace\blog\main\__init__.py:50]
 2014-05-08 17:36:04,177 INFO: blog startup [in c:\Python Workspace\blog\main\__init__.py:50]
 2014-05-08 17:54:21,007 INFO: blog startup [in c:\Python Workspace\blog\main\__init__.py:50]
+2014-05-09 09:25:47,005 INFO: blog startup [in c:\Python Workspace\blog\main\__init__.py:50]
+2014-05-09 09:25:47,375 INFO: blog startup [in c:\Python Workspace\blog\main\__init__.py:50]
+2014-05-09 11:13:46,176 INFO: blog startup [in c:\Python Workspace\blog\main\__init__.py:50]
+2014-05-09 11:14:05,782 INFO: blog startup [in c:\Python Workspace\blog\main\__init__.py:50]
+2014-05-09 12:05:09,552 INFO: blog startup [in c:\Python Workspace\blog\main\__init__.py:50]

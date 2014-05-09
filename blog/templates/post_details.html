@@ -62,7 +62,11 @@
   {%- for item in comments recursive %}
     {{ com.comment(item) }}
     {%- if item.childrenc -%}
+    	{% if loop.depth < 5 %}
         <div class="children">{{ loop(item.childrenc) }}</div>
+        {% else %}
+        <div class="children">{{ com.comment_end(item) }}</div>
+        {% endif %}
     {%- endif %}
 {%- endfor %}
   

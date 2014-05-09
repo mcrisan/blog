@@ -27,6 +27,8 @@
 							{% else %}
 							<em><a href="{{ url_for('users.follow_user', id=post.users.id) }}">Follow</a></em><br />
 							{% endif %}
+						{% else %}
+						 <br />	
 						{% endif %}	
 						<span>Reaction: </span>
 						<em><a href="{{ url_for('blog.post_details', id=post.id) }}#comments">{{post.comments|length}} comments</a></em> <br/>

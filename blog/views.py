@@ -94,18 +94,20 @@ def post_details(id):
  
  
 @blog.route('/create_comment', methods=['POST'])
-@login_required
 def create_comment():
-    id_parent = request.form['id_parent']
-    id_post = request.form['id_post']
-    text = request.form['text']   
-    comment= Comments(text, current_user.id, id_post, id_parent)
-    try:
-        db.session.add(comment) 
-        db.session.commit() 
-    except:
-        return redirect(url_for('blog.post_details', id=id_post))             
-    return render_template('comment.html', comment=comment) 
+    if current_user.is_authenticated():
+        id_parent = request.form['id_parent']
+        id_post = request.form['id_post']
+        text = request.form['text']   
+        comment= Comments(text, current_user.id, id_post, id_parent)
+        try:
+            db.session.add(comment) 
+            db.session.commit() 
+        except:
+            return "the operation could not be completed "            
+        return render_template('comment.html', comment=comment) 
+    else:
+        return "-1"
  
  
 @blog.route('/post/edit/<id>', methods=['GET', 'POST'])
