@@ -13,7 +13,6 @@ $('.comments').on("click", '.reply',  function (event) {
         var button = $('<button>').attr('class','btn btn-primary').text("Send");
         var div_button = $('<div>').attr('class','col-xs-offset-9 col-xs-10').append($(button));
         var div_container = $(parent).find('.form_container').first().append($(div)).append($(div_button));
-        //$(parent).append($(div_container));
     }else{
     	$(parent).find('textarea').remove();
       	$(parent).find('button').remove();
@@ -36,8 +35,7 @@ $('.comments').on("click", '.reply',  function (event) {
           	if (data !="-1"){
           		$(parent).append(data);  
           	}else{
-          		//div = $('<div>').attr('class','flashes col-xs-offset-3 col-xs-9').text("You need o be logged in!");
-          		//$(parent).append($(div));
+          		console.log($(parent).find(".error"));
           		$(parent).find(".error").text("You need o be logged in!");
           	}
             }
@@ -58,9 +56,11 @@ $('.comment').on("click", '.like',  function (event) {
         cache: false,
         success: function(data) {
         	if (data !="-1"){
-        		$($this).find("span").text(data);
+        		$($this).find("span").text(data['likes']);
+        		$($this).parents("div").first().find(".unlike > span").text(data['unlikes']);
+        		$(mes).text(data['mes']).show().delay(1000).fadeOut();
         	}else{
-        		$(mes).text("You need o be logged in!");
+        		$(mes).text("You need to be logged in!").show().delay(2000).fadeOut();
         	}
         }
         });
@@ -80,9 +80,11 @@ $('.comment').on("click", '.unlike',  function (event) {
         cache: false,
         success: function(data) {
         	if (data !="-1"){
-        		$($this).find("span").text(data);
+        		$($this).find("span").text(data['unlikes']);
+        		$($this).parents("div").first().find(".like > span").text(data['likes']);
+        		$(mes).text(data['mes']).show().delay(1000).fadeOut();
         	}else{
-        		$(mes).text("You need o be logged in!");
+        		$(mes).text("You need to be logged in!").show().delay(2000).fadeOut();
         	}
         }
         });

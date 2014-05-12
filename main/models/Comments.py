@@ -1,6 +1,6 @@
 from main import db
 from datetime import datetime
-
+from main.models.votes import Votes
 
 class Comments(db.Model):
     __tablename__ = 'comments'
@@ -22,3 +22,21 @@ class Comments(db.Model):
         self.parent_id = parent_id
         self.likes = likes
         self.unlikes = unlikes
+        
+    def vote_status(self, user_id, type):
+        vote = Votes.query.filter((Votes.comment_id==self.id)&(Votes.user_id==user_id)).first()
+        if vote:
+            if vote.type==type:
+                return True
+                #return "You already %s the comment" % type;
+            else:
+                return vote
+                #vote.type = type
+                #db.session.commit()
+                #return "Vote modified";
+        else:
+            return None
+            #new_vote = Votes(self.id, user_id, type)
+            #db.seassion.add(new_vote)
+            #db.session.commit()
+            #return "New vote submitted"    

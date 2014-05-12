@@ -2,7 +2,7 @@ import pprint
 import json
 from main import db
 from blog import blog
-from main.models import User, Post, Category, Comments, Tags
+from main.models import User, Post, Category, Comments, Tags, Votes
 from flask import request, g, redirect, url_for, \
      render_template, flash, jsonify
 from flask.ext.login import LoginManager, login_required, login_user, logout_user, current_user
@@ -12,6 +12,7 @@ from blog.forms import CreatePostForm
 from datetime import datetime
 from elasticsearch import Elasticsearch
 import re
+from httplib import HTTPResponse
 
 @blog.route('/')
 @blog.route('/index', methods = ['GET', 'POST'])
@@ -114,16 +115,29 @@ def like_comment():
     if current_user.is_authenticated():
         id_comment = request.form['id_comment']
         comment = Comments.query.get(id_comment);
-        comment.likes += 1 
-        db.session.commit()
-        print(comment)
-        #try:
-        #    db.session.add(comment) 
-        #    db.session.commit() 
-        #except:
-        #    return "the operation could not be completed "            
-        #return render_template('comment.html', comment=comment) 
-        return '%s' % comment.likes
+        vote_status = comment.vote_status(current_user.id, "like");
+        print vote_status;
+        if vote_status is None:
+            new_vote = Votes(comment.id, current_user.id, "like")
+            db.session.add(new_vote)
+            db.session.commit()
+            comment.likes += 1 
+            db.session.commit()
+            mes = "Your vote has been submitted"
+        else:
+            if vote_status is True:
+                mes = "Your already liked the comment"
+            else:
+                vote_status.type = "like"
+                db.session.commit()
+                comment.likes += 1
+                comment.unlikes -= 1
+                db.session.commit() 
+                mes = "Your vote has been changed"   
+        return jsonify( { 'likes'        : comment.likes,
+                          'unlikes'      : comment.unlikes,
+                          'mes'          : mes
+                         } )        
     else:
         return "-1" 
     
@@ -132,16 +146,29 @@ def unlike_comment():
     if current_user.is_authenticated():
         id_comment = request.form['id_comment']
         comment = Comments.query.get(id_comment);
-        comment.unlikes += 1 
-        db.session.commit()
-        print(comment)
-        #try:
-        #    db.session.add(comment) 
-        #    db.session.commit() 
-        #except:
-        #    return "the operation could not be completed "            
-        #return render_template('comment.html', comment=comment) 
-        return '%s' % comment.unlikes
+        vote_status = comment.vote_status(current_user.id, "unlike");
+        print vote_status;
+        if vote_status is None:
+            new_vote = Votes(comment.id, current_user.id, "unlike")
+            db.session.add(new_vote)
+            db.session.commit()
+            comment.unlikes += 1 
+            db.session.commit()
+            mes = "Your vote has been submitted"
+        else:
+            if vote_status is True:
+                mes = "Your already unliked the comment"
+            else:
+                vote_status.type = "unlike"
+                db.session.commit()
+                comment.likes -= 1
+                comment.unlikes += 1
+                db.session.commit()
+                mes = "Your vote has been changed" 
+        return jsonify( { 'likes': comment.likes,
+                          'unlikes'      : comment.unlikes,
+                          'mes'          : mes  
+                         } )
     else:
         return "-1"     
  
