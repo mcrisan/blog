@@ -44,7 +44,6 @@
 		  
           <ul class="nav navbar-nav navbar-right">
 
-            <li><a href="#">About</a></li>
             <li><a id="contact" href="#">Contact</a></li>
             {% if g.user.is_authenticated() %}
             	{% if g.user.type == 1 %}
@@ -54,7 +53,7 @@
             {% else %}
             <li><a href="{{ url_for('main.register') }}">Register</a></li>
     		<li><a href="{{ url_for('main.login') }}">Log in</a></li>
-    		<li><a href=""><fb:login-button autologoutlink="false" scope="email,user_birthday, manage_pages"></fb:login-button></a></li>
+    		{#<li><a href=""><fb:login-button autologoutlink="false" scope="email,user_birthday, manage_pages"></fb:login-button></a></li>#}
             {% endif %}
           </ul>
       </div>

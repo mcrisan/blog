@@ -2,7 +2,12 @@
 {% import 'form_macro.html' as forms %}
 {% block content %}
   <h2>Login</h2>
-  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  {% if error %}<p class=error><strong>Error:</strong> </p>{{ error }}{% endif %}
+  {#<div class="fb-login-button col-xs-offset-2 col-xs-8">
+  	<button id="fb-login" class="btn btn-primary btn-lg btn-block">FaceBook Login</button>
+  </div>#}
+  <div class="col-xs-offset-3 fb-login-button" data-max-rows="1" data-size="xlarge" data-show-faces="false" data-auto-logout-link="false" scope="email,user_birthday, manage_pages" onlogin="checkLoginState();">Sign in with Facebook</div><br/>
+  <h3 style="text-align:center">Or</h3>
   <form action="{{ url_for('main.login') }}?next={{ request.args.get('next') }}" class="form-horizontal" method=post>
   	{{form.hidden_tag()}}
  	{{ forms.render_bootstrap_field(form.username, 'form-control', 'Enter Username', 'True') }}
@@ -10,9 +15,9 @@
 
     
     <div class="form-group">
-        <div class="col-xs-offset-2 col-xs-6">
-          <button type="submit" class="btn btn-primary">Log in</button>
-          <div style="float:right;" class="fb-login-button" data-max-rows="1" data-size="xlarge" data-show-faces="false" data-auto-logout-link="false"></div>
+        <div class="col-xs-offset-2 col-xs-8">
+          <button type="submit" class="btn btn-primary btn-lg btn-block">Log in</button>
+          
         </div>
     </div>
 

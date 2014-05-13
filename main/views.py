@@ -58,7 +58,7 @@ def ftest2():
   
         pprint.pprint(pages["data"]) 
     return render_template('facebook_pages.html', pages=pages["data"])      
-    return "123 "
+    return "123 "     
 
 @mainapp.route('/facebook_login', methods=['GET', 'POST'])
 def facebook_login():

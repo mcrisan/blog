@@ -85,6 +85,11 @@ background: transparent url(img/top-bg.gif) repeat-x;
 	text-align:center;
 }
 
+#fb-login{
+  cursor:pointer;
+  //background: url(/static/images/login-facebook.png) no-repeat center top;
+  }
+
 .post {
 	margin-bottom: 40px;
 }
