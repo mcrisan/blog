@@ -11,6 +11,8 @@ class User(db.Model):
     password = db.Column(db.String(80))
     email = db.Column(db.String(120), unique=True)
     token = db.Column(db.Text())
+    oauth_token = db.Column(db.Text())
+    oauth_secret = db.Column(db.Text())
     social = db.Column(db.String(50))
     posts = db.relationship("Post", backref="users")
     comments = db.relationship("Comments", backref="ucomments")

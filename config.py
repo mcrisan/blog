@@ -18,3 +18,12 @@ MAIL_PASSWORD = 'pass'
 
 # administrator list
 ADMINS = ['crisan.mariusvlad@gmail.com']
+
+# twitter
+
+consumer_key = "QnKjgwp8A05JL6ib7JGusgF8t"
+consumer_secret = "ZbHkAp0DY5msfzrUqROltfFXPkULgyaAwrJr7k4KmoMOEeWA0G"
+request_token_url = 'https://api.twitter.com/oauth/request_token'
+access_token_url = 'https://api.twitter.com/oauth/access_token'
+authenticate_url = 'https://api.twitter.com/oauth/authenticate'
+callback_uri = 'http://127.0.0.1:5000/twitter_authenticated'

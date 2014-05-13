@@ -9,15 +9,17 @@ from main import db
 from flask.ext.login import LoginManager, login_required, login_user, logout_user, current_user
 import pprint
 import facebook
-from config import app_id, app_secret
-
+from config import app_id, app_secret, consumer_key, consumer_secret, request_token_url, access_token_url, authenticate_url, callback_uri
+import oauth2 as oauth
+import cgi
+import twitter
+import webbrowser
+import urllib
 
 @mainapp.route('/login', methods=['GET', 'POST'])
 def login():
         form = LoginForm()
         next = request.args.get('next')
-        print "your next move="
-        print next
         if form.validate_on_submit():
             flash('Successfully logged in as %s' % form.user.username)
             session['user_id'] = form.user.id
@@ -82,6 +84,63 @@ def facebook_login():
         login_user(user)    
         pprint.pprint(profile['username'])   
     return redirect(url_for('blog.index')) 
+
+@mainapp.route('/twitter_login', methods=['GET', 'POST'])
+def twitter_login():
+    #api = twitter.Api(consumer_key=consumer_key,
+    #                  consumer_secret=consumer_secret,
+    #                  access_token_key='917529883-YRxS1ByvKrMHnr9vMN7oGNTNLqo5hDeABaqg821V',
+    #                  access_token_secret='j3ImOxL91rKlAi16xFjSr87YseB00MsQqzFlydp4sMZIx')
+    #print api.VerifyCredentials()
+    consumer = oauth.Consumer(key=consumer_key, secret=consumer_secret)
+    client = oauth.Client(consumer)
+    body = urllib.urlencode(dict(oauth_callback=callback_uri))   
+    resp, content = client.request(request_token_url, "POST", body=body)
+
+    if resp['status'] != '200':
+        raise Exception("Invalid response from Twitter.")
+
+    session['request_token'] = dict(cgi.parse_qsl(content))
+
+    url = "%s?oauth_token=%s" % (authenticate_url,
+        session['request_token']['oauth_token'])
+    return redirect(url) 
+
+@mainapp.route('/twitter_authenticated', methods=['GET', 'POST'])
+def twitter_authenticated():
+    pincode = request.args.get('oauth_verifier')
+    consumer = oauth.Consumer(key=consumer_key, secret=consumer_secret)
+    token = oauth.Token(session['request_token']['oauth_token'],
+                        session['request_token']['oauth_token_secret'])
+    client = oauth.Client(consumer, token)
+
+    # Step 2. Request the authorized access token from Twitter.
+    body = urllib.urlencode({'oauth_callback': callback_uri, 'oauth_verifier': pincode })
+    resp, content = client.request(access_token_url, "POST", body=body)
+    if resp['status'] != '200':
+        raise Exception("Invalid response from Twitter."+ resp['status'])
+
+    """
+    This is what you'll get back from Twitter. Note that it includes the
+    user's user_id and screen_name.
+    {
+        'oauth_token_secret': 'IcJXPiJh8be3BjDWW50uCY31chyhsMHEhqJVsphC3M',
+        'user_id': '120889797', 
+        'oauth_token': '120889797-H5zNnM3qE0iFoTTpNEHIz3noL9FKzXiOxwtnyVOD',
+        'screen_name': 'heyismysiteup'
+    }
+    """
+    access_token = dict(cgi.parse_qsl(content))   
+    user = User.query.filter_by(username=access_token['screen_name']).first()
+    if user is None:
+        user = User(access_token['screen_name'], "234", "email", type=0)
+        user.oauth_token = access_token['oauth_token']
+        user.oauth_secret = access_token['oauth_token_secret']
+        user.social = "twitter"
+        db.session.add(user)
+        db.session.commit()
+    login_user(user)
+    return redirect(url_for('blog.index'))  
 
 @mainapp.route('/register' , methods=['GET','POST'])
 def register():
