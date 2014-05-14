@@ -1,7 +1,7 @@
 
 from main import mainapp, login_manager
 from main import app
-from models import User, Category, Tags
+from models import User, Category, Tags, Comments, Post
 from blog.forms import LoginForm, RegisterForm, SearchForm
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
@@ -59,8 +59,7 @@ def ftest2():
         pages = graph.get_object("me/accounts")
   
         pprint.pprint(pages["data"]) 
-    return render_template('facebook_pages.html', pages=pages["data"])      
-    return "123 "     
+    return render_template('facebook_pages.html', pages=pages["data"])          
 
 @mainapp.route('/facebook_login', methods=['GET', 'POST'])
 def facebook_login():
@@ -159,6 +158,16 @@ def register():
         return redirect(url_for('main.login'))
     return render_template('register.html', form=form)
 
+@mainapp.route('/top_users' , methods=['GET','POST'])
+def top_users():
+    top_users = User.top_users()
+    top_posts = Post.top_posts()
+    top_comments = User.top_comments()
+    #pprint.pprint(top_comments.all())
+    Category.posts_without_cat()
+    print(top_comments.all())
+    #return top_users.all()
+    return render_template('top_users.html', users=top_users)
 
 @mainapp.route("/logout")
 @login_required
@@ -178,15 +187,15 @@ def before_request():
     g.search_form = SearchForm()
 
 @app.context_processor
-def load_tags():
+def load_sidebar():
     tag = Tags()
     results = tag.load_tags()
-    return dict(tags= results)
-    
-@app.context_processor
-def sidebar():
-    cat = Category.query.all()
-    return dict(cat= cat)    
+    top_users = User.top_users().all()
+    top_posts = Post.top_posts().all()
+    top_comments = User.top_comments().all()
+    cat = Category.category_count().all()
+    #posts_in_categ = 
+    return dict(tags= results, users=top_users, posts2=top_posts, top_comments=top_comments, categ=cat)   
 
 @app.errorhandler(404)
 def not_found_error(error):

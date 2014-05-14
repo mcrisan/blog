@@ -1,0 +1,21 @@
+<div class ="top_users">
+<h2 class="cufon-h2"><span>Top Users</span></h2>
+	{% for user in users %}
+	<div class="row">
+		<div class="col-xs-5"><a href="{{ url_for('blog.show_user', username=user.username) }}">{{ user.username}}</a></div>
+		<div class="col-xs-2">{{ user.total}}</div>
+		<div class="col-xs-2">
+			{% if (g.user.is_authenticated()) and (g.user.username != user.username) %}
+							{% if g.user.is_following_by_username(user.id) %}
+							<em><a href="{{ url_for('users.unfollow_user', id=user.id) }}">Unfollow</a></em><br />				
+							{% else %}
+							<em><a href="{{ url_for('users.follow_user', id=user.id) }}">Follow</a></em><br />
+							{% endif %}
+						{% endif %}
+		</div>
+	</div>
+	{% else %}
+		<p>No Users</p>
+	{% endfor %}	
+    
+</div>

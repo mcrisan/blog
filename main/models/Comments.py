@@ -1,6 +1,9 @@
 from main import db
 from datetime import datetime
 from main.models.votes import Votes
+#from main.models.User import User
+
+#from main.models import User
 
 class Comments(db.Model):
     __tablename__ = 'comments'
@@ -39,4 +42,8 @@ class Comments(db.Model):
             #new_vote = Votes(self.id, user_id, type)
             #db.seassion.add(new_vote)
             #db.session.commit()
-            #return "New vote submitted"    
+            #return "New vote submitted" 
+            
+  #  @staticmethod
+  #  def top_comments():
+  #      return db.session.query(Comments.id, Comments.comment, Comments.likes, User.username, User.id).join(User, User.id==Comments.user_id).order_by('likes DESC').limit(3)

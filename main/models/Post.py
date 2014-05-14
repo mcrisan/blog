@@ -60,6 +60,11 @@ class Post(db.Model):
     def __repr__(self):
         return '<Post %r>' % self.title
     
+    @staticmethod
+    def top_posts():
+        return db.session.query(Post.id, Post.title, Post.image, db.func.count(Comments.post_id).label('total')).outerjoin(Comments, ( Post.id == Comments.post_id)).group_by(Post.id).order_by('total DESC').limit(3)
+    
+    
     def get_comments_by_post(self):
         com = Comments.query.filter((Comments.post_id==self.id)&(Comments.parent_id==None) ).order_by(Comments.created_at.desc()).all()
         return com

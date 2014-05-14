@@ -45,7 +45,7 @@ $('.comments').on("click", '.reply',  function (event) {
  });
 $('.comment').on("click", '.like',  function (event) {
 	event.preventDefault();
-	var mes = $(this).parents(".comment").first().find(".error");
+	var mes = $(this).parents(".comment").first().find(".error").first();
 	var id = $(this).data('id');
 	$this = $(this);
 	console.log(id);
@@ -69,7 +69,7 @@ $('.comment').on("click", '.like',  function (event) {
 
 $('.comment').on("click", '.unlike',  function (event) {
 	event.preventDefault();
-	var mes = $(this).parents(".comment").first().find(".error");
+	var mes = $(this).parents(".comment").first().find(".error").first();
 	var id = $(this).data('id');
 	$this = $(this);
 	console.log(id);

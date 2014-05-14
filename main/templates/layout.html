@@ -44,7 +44,7 @@
 		  
           <ul class="nav navbar-nav navbar-right">
 
-            <li><a id="contact" href="#">Contact</a></li>
+            {# <li><a id="contact" href="#">Contact</a></li> #}
             {% if g.user.is_authenticated() %}
             	{% if g.user.type == 1 %}
             		<li><a href="{{ url_for('admin.index') }}">Admin Area</a></li>
@@ -113,6 +113,12 @@
 	        	{% include "sidebar.html" %}
 	        	
 	        	{% include "tags.html" %}
+	        	
+	        	{% include "top_users.html" %}
+	        	
+	        	{% include "top_posts.html" %}
+	        	
+	        	{% include "top_comments.html" %}
 	        {% endblock sidebar %}
         </div>
         

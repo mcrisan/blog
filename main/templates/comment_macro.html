@@ -1,6 +1,6 @@
 {% macro comment(comment) %}
 <hr size="30">
-	  <div class="comment">
+	  <div id="com_{{ comment.id }}" class="comment">
 	  	  <img src="http://thecontentwrangler.com/wp-content/uploads/2011/08/User.png"  alt="" />
 		  <span>{{ comment.ucomments.username }} - {{comment.created_at.strftime('%Y-%m-%d') }} </span></br>
 		  <span>{{comment.comment }}</span></br>

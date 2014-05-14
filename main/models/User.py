@@ -52,6 +52,14 @@ class User(db.Model):
     def posts_by_user(self):
         return Post.query.join(User, (User.id == Post.user_id)).filter(User.id == self.id).order_by(Post.created_at.desc())
     
+    @staticmethod
+    def top_users():
+        return db.session.query(User.username, User.id, db.func.count(Post.user_id).label('total')).outerjoin(Post, ( User.id == Post.user_id)).group_by(User.id).order_by('total DESC').limit(5)
+    
+    @staticmethod
+    def top_comments():
+        return db.session.query(Comments.id, Comments.comment, Comments.likes, User.username.label('username'), User.id.label('user_id'), Comments.post_id ).join(User, User.id==Comments.user_id).order_by('likes DESC').limit(3)
+    
     def user_stream(self):
         return Post.query.join(followers, (followers.c.followed_id == Post.user_id)).filter(followers.c.follower_id == self.id).order_by(Post.created_at.desc())
      
@@ -70,3 +78,6 @@ class User(db.Model):
 
     def is_following(self, user):
         return self.followed.filter(followers.c.followed_id == user.id).count() > 0
+    
+    def is_following_by_username(self, id):
+        return self.followed.filter(followers.c.followed_id == id).count() > 0

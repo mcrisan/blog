@@ -47,8 +47,14 @@ def posts_by_tag(tag):
 def show_user(username, page=1):
     user = User.query.filter_by(username=username).first_or_404()  # @UndefinedVariable
     #posts = user.posts_by_user().paginate(page, app.config['POSTS_PER_PAGE'], False) 
+    user_posts = user.posts_by_user().paginate(page, app.config['POSTS_PER_PAGE'], False)
     posts = user.user_stream().paginate(page, app.config['POSTS_PER_PAGE'], False) 
-    return render_template('user_details.html', user=user, posts=posts)
+    if current_user.username == username:
+        head = "Latest posts from you and people you follow "
+        return render_template('user_details.html', user=user, posts=posts, head = head)
+    else:
+        head = "Latest posts made by %s " % username
+        return render_template('user_details.html', user=user, posts=user_posts, head = head)
  
     
 @blog.route('/create_post', methods=['GET', 'POST'])
