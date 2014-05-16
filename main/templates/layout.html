@@ -4,19 +4,22 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <title>{% block title %}My Website{% endblock title %}</title>
         <meta name="description" content="">
-        <meta name="viewport" content="width=device-width">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	
         {% block styling %}
             {# Load Twitter Bootstrap http://getbootstrap.com/ #}
             {# With Amelia theme from http://bootswatch.com/amelia/ #}
             
             <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+            <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.css') }}">
             <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='css/index.css') }}">
             <link   rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
         	
         {% endblock styling %}
 		
 		<script src="{{url_for('static', filename='moment.min.js') }}"></script>
+		
+  	
     </head>
 
 <body>
@@ -34,115 +37,155 @@
 	{% endif %}
      {% endif %}
 	
-	   
-    <div class="top navbar navbar-default navbar-static-top">
-      <div class="top-content ">
-		  
-          <ul class="nav navbar-nav">
-            <li><a href="{{ url_for('blog.index') }}">Home</a></li>
-          </ul>
-		  
-          <ul class="nav navbar-nav navbar-right">
-
-            {# <li><a id="contact" href="#">Contact</a></li> #}
-            {% if g.user.is_authenticated() %}
-            	{% if g.user.type == 1 %}
-            		<li><a href="{{ url_for('admin.index') }}">Admin Area</a></li>
-            	{% endif %}	
-                <li id="logout"><a href="{{ url_for('main.logout') }}">Log out</a></li>
-            {% else %}
-            <li><a href="{{ url_for('main.register') }}">Register</a></li>
-    		<li><a href="{{ url_for('main.login') }}">Log in</a></li>
-    		{#<li><a href=""><fb:login-button autologoutlink="false" scope="email,user_birthday, manage_pages"></fb:login-button></a></li>#}
-            {% endif %}
-          </ul>
-      </div>
-    </div>
-      
-    <div id ="content" class="container">
-    	<div class="logo">
-			<a href="{{ url_for('blog.index') }}"><img src="{{ url_for('static', filename='css/img/logo.png') }}" width="196" height="42" alt="Brillante - A Brilliant Website Design" /></a>
-			<p>A very short description about the website goes here. And that's it!</p>
-       </div><!-- .logo -->
-       
-       <div class ="secondnav">
-	    	{% block secondnav %}
-	    	{% if g.user.is_authenticated() %}
+	<header class="top" role="header">
+        <div class="container">
+            <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="glyphicon glyphicon-align-justify"></span>
+            </button>
+            <nav class="navbar-collapse collapse" role="navigation">
+	            <ul class="nav navbar-nav">
+		            <li><a href="{{ url_for('blog.index') }}">Home</a></li>
+		        </ul>
+	            <ul class="nav navbar-nav navbar-right">
+		            {# <li><a id="contact" href="#">Contact</a></li> #}
+		            {% if g.user.is_authenticated() %}
+		            	{% if g.user.type == 1 %}
+		            		<li><a href="{{ url_for('admin.index') }}">Admin Area</a></li>
+		            	{% endif %}	
+		                <li id="logout"><a href="{{ url_for('main.logout') }}">Log out</a></li>
+		            {% else %}
+			            <li><a href="{{ url_for('main.register') }}">Register</a></li>
+			    		<li><a href="{{ url_for('main.login') }}">Log in</a></li>
+			    		{#<li><a href=""><fb:login-button autologoutlink="false" scope="email,user_birthday, manage_pages"></fb:login-button></a></li>#}
+		            {% endif %}
+	            </ul>
+            </nav>
+        </div>
+    </header>
+	
+	<div class="content-wrapper">
+	<div class="container">
+	    <!-- Site banner -->
+    <div class="banner">
+        <div class="container">
+         <div class="logo row">
+	    	<div class="col-md-2 col-sm-4 col-xs-4">
+				<a href="{{ url_for('blog.index') }}"><img src="{{ url_for('static', filename='css/img/logo.png') }}" width="196" height="42" class="img-responsive" alt="Brillante - A Brilliant Website Design" /></a>
+			</div>
+			<div class="col-md-4 col-sm-4 col-xs-4">
+				<p>A very short description about the website goes here. And that's it!</p>
+			</div>
+         </div>
+       </div>
+	</div>
+	    <!-- Seccond nav -->
+	<div class="container secondnav">
+	{% block secondnav %}
+	   {% if g.user.is_authenticated() %}
+	     <div class="row">
+	       <div class="col-md-12 col-sm-12 col-xs-12">
 			    <ul class="nav nav-tabs">
 			        <li ><a href="{{ url_for('blog.create_post') }}">Create Post |</a></li>
+			         <li ><a href="{{ url_for('users.send_message') }}">Send Message |</a></li>
+			         <li ><a href="{{ url_for('users.view_messages') }}">View Messages |</a></li>
 			    </ul>
+	       </div>
+	     </div>  
 			    {% endif %}
-	    	{% endblock secondnav %}
-    	</div>
-    	<div class ="featured">
-	    	{% block featured %}
-	    		
-	    	{% endblock featured %}
-    	</div>
-    	
-    	<div class ="main">
-    		{% block errors %}
-    			{% with messages = get_flashed_messages() %}
-  					{% if messages %}
-    					<dl class=flashes>
-    						{% for message in messages %}
-      							<dt>{{ message }}</dt>
-    						{% endfor %}
-   						 </dl>
-  					{% endif %}
-				{% endwith %}
-    		{% endblock errors %}
-    		
-	        {% block content %}
-	        
-	        {% endblock content %}
-	        {% block comments %}
-	        
-	        {% endblock comments %}
-        </div>
-        
-        <div class ="sidebar">
-        	<form style="display: inline;" action="{{url_for('blog.search')}}" method="post" name="search">
-        		{{g.search_form.hidden_tag()}}
-        	<div class="ui-widget">
-        		{{g.search_form.search(size=20, id="autocomplete")}}	
-        	<input id="search" type="submit" value="Search"></form>
-        	</div>
-	        {% block sidebar %}
-	        		        
-	        	{% include "sidebar.html" %}
-	        	
-	        	{% include "tags.html" %}
-	        	
-	        	{% include "top_users.html" %}
-	        	
-	        	{% include "top_posts.html" %}
-	        	
-	        	{% include "top_comments.html" %}
-	        {% endblock sidebar %}
-        </div>
-        
-        <div id ="footer">
-        	<div class="footer-content" />
-		        {% block footer %}
-		        	Just a footer
-		        {% endblock footer %}
-	        </div>
-        </div>
+	{% endblock secondnav %}
+    </div> 
+    
+ 
+    
+    <div class ="featured" >
+	    <div class="container">	
+	    {% block featured %}
+				    	{#<div id="a" class ="featured col-md-offset-3 col-md-6"></div>#}
+		{% endblock featured %}		    	
+		</div>	    	
     </div>
+    
+     <!-- Middle content section -->  
+    <div class ="middle" >
+	    <div class="container">		    	
+			    	<div class ="content col-md-9">
+			    		{% block errors %}
+			    			{% with messages = get_flashed_messages() %}
+			  					{% if messages %}
+			    					<dl class=flashes>
+			    						{% for message in messages %}
+			      							<dt>{{ message }}</dt>
+			    						{% endfor %}
+			   						 </dl>
+			  					{% endif %}
+							{% endwith %}
+			    		{% endblock errors %}
+			    		
+				        {% block content %}
+				        
+				        {% endblock content %}
+				        {% block comments %}
+				        
+				        {% endblock comments %}
+			        </div>
+			        
+			        <div class ="col-md-3">
+			        <br/>
+			        	<form style="display: inline;" action="{{url_for('blog.search')}}" method="post" name="search">
+			        		{{g.search_form.hidden_tag()}}
+				        	<div class="ui-widget"> 
+				        		{{g.search_form.search(size=20, id="autocomplete")}}	
+				        		<input id="search" type="submit" value="Search">
+				        	</div>
+			        	</form>
+			        	
+				        {% block sidebar %}
+				        		        
+				        	{% include "sidebar.html" %}
+				        	
+				        	{% include "tags.html" %}
+				        	
+				        	{% include "top_users.html" %}
+				        	
+				        	{% include "top_posts.html" %}
+				        	
+				        	{% include "top_comments.html" %}
+				        {% endblock sidebar %}
+			        </div>
+		        
+	    </div>
+    </div>
+    
+    <div class ="footer">
+	    <div class="container">
+	    		        <div class ="row">
+				        <div id ="footer">
+				        	<div class="footer-content" >
+						        {% block footer %}
+						        	Just a footer
+						        {% endblock footer %}
+					        </div>
+				        </div>
+			        </div>
+		</div>	        
+	</div>	        
 	<div id="fb-root"></div>
-	
+	</div>
+	</div>
     {% block javascript %}
         {#<script src="{{ url_for('static', filename='jquery-2.0.3.min.js') }}"></script>
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.js"></script>
         #}
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
 		<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+		<script src="{{url_for('static', filename='js/slider.js') }}"></script>  
+		<script src="{{url_for('static', filename='jquery.slides.min.js') }}"></script> 
         <script src="{{url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>       
 		<script type="text/javascript" src="{{ url_for('static', filename='js/facebook_login.js') }}"></script>
 		<script src="{{url_for('static', filename='js/autocomplete.js') }}"></script>
 	
     {% endblock javascript %}
+
     {% block mysripts %}
 
     {% endblock mysripts %}

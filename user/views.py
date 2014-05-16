@@ -1,10 +1,12 @@
 from user import users
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
-from main import db
-from main.models import User
+from main import db, app
+from main.models import User, Message
 from flask.ext.login import LoginManager, login_required, login_user, logout_user, current_user
 from main.email import follower_notification, email 
+from user.forms import SendMessage
+from flask.ext.sqlalchemy import Pagination
 import pprint
 
 @users.route('/test')
@@ -51,6 +53,58 @@ def unfollow_user(id):
         db.session.commit()        
         flash(u'User has been removed from your followers list')    
     return redirect(url_for('blog.show_user', username=current_user.username))
+
+@users.route('/user/send_message' , methods=['GET','POST'])
+@login_required
+def send_message(conv=0):
+    form = SendMessage() 
+    if form.validate_on_submit():
+        to_user = User.query.filter(User.username == form.to_user.data).first().id 
+        subject = form.subject.data 
+        message = form.message.data
+        from_user =  current_user.id
+        message = Message(subject=subject, message=message, from_user_id=from_user, to_user_id=to_user)
+        db.session.add(message)
+        db.session.commit()
+        flash(u'Message has been sent')
+        return redirect(url_for('users.view_conversation', from_user=from_user, to_user=to_user))
+    return render_template('user/send_message.html', form=form)
+
+@users.route('/user/conversation' , methods=['POST'])
+@login_required
+def send_conv_response(conv=0):
+    if request.method=='POST':
+        print request.form['to_user']
+        to_user = User.query.filter(User.username == request.form['to_user']).first().id 
+        subject = request.form['subject'] 
+        message = request.form['message']
+        from_user =  current_user.id
+        message = Message(subject=subject, message=message, from_user_id=from_user, to_user_id=to_user)
+        db.session.add(message)
+        db.session.commit()
+        flash(u'Message has been sent')
+        return redirect(url_for('users.view_conversation', from_user=from_user, to_user=to_user))
+    return redirect(url_for('users.view_conversation', from_user=from_user, to_user=to_user))        
+
+
+@users.route('/user/view_messages', methods = ['GET', 'POST'])
+@users.route('/user/view_messages/<int:page>', methods = ['GET', 'POST'])
+@login_required
+def view_messages(page = 1):
+    messages = current_user.messages().all()#.paginate(page, app.config['POSTS_PER_PAGE'], False)
+    #return "111"
+    return render_template('user/view_messages.html', messages=messages)
+
+@users.route('/user/conversation/<int:from_user>/<int:to_user>', methods = ['GET', 'POST'])
+@login_required
+def view_conversation(from_user, to_user):
+    if current_user.id == from_user:
+        username = User.query.get(to_user).username
+    else:
+        username = User.query.get(from_user).username    
+    messages = Message.query.filter(db.or_(db.and_(Message.from_user_id==from_user, Message.to_user_id==to_user), db.and_(Message.from_user_id==to_user, Message.to_user_id==from_user))).order_by(Message.date.desc()).all()
+    #return "111"
+    return render_template('user/conversation.html', messages=messages, username=username)
  
 @users.route('/user/test/<id>')
 @login_required

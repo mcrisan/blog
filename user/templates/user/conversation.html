@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h4>View Your conversation with {{username}}</h4><br/><br/>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  <form action="{{ url_for('users.send_conv_response') }}" class="form-horizontal" method=post> 
+  		<input type="hidden" name="to_user" value={{username}}  > 
+  		<input type="hidden" name="subject" value="Conversation wih {{username}}"  > 
+    <!-- Textarea -->
+	<div class="form-group com_textarea">
+		<div class="col-md-offset-1 col-md-8">                     
+		    <textarea class="form-control" id="message" name="message" required></textarea>
+		</div>
+	</div>  
+    <div class="form-group">
+        <div class="col-md-offset-6 col-md-9">
+            <button type="submit" class="btn btn-primary">Send Message</button>
+        </div>
+    </div>
+  </form>
+  <div class="conversation">
+	  {% for message in messages %}
+	  
+		  <div class="row ">
+		     <div class="message col-md-offset-1 col-md-8 {{ loop.cycle('odd', 'even') }}">
+		         <span><a href="{{ url_for('blog.show_user', username=g.user.get_username_by_id(message.from_user_id)) }}">{{g.user.get_username_by_id(message.from_user_id)}}</a> about {{momentjs(message.date).fromNow()}} said:</span><br/>
+		         <p>{{message.message}}</p>
+		     </div> 
+		  </div>
+	  {% else %}
+		  <div class="row">
+		     <div class="col-md-9">Curently there are no messages in this conversation</div>
+		  </div>
+	  {% endfor %}
+  </div>   
+{#
+    {% if messages.has_prev %}<a href="{{ url_for('users.view_messages', page = messages.prev_num) }}"><< Newer posts</a>{% else %}<< Newer posts{% endif %} | 
+	{% if messages.has_next %}<a href="{{ url_for('users.view_messages', page = messages.next_num) }}">Older posts >></a>{% else %}Older posts >>{% endif %}
+#}
+{% endblock %}
+
+
+

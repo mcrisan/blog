@@ -2,7 +2,7 @@ from main import db
 from main.models.Post import Post
 from main.models.AsociateTables import followers
 from main.models.Comments import Comments
-
+from main.models.Message import Message
 
 class User(db.Model):
     __tablename__ = "users"   
@@ -60,6 +60,43 @@ class User(db.Model):
     def top_comments():
         return db.session.query(Comments.id, Comments.comment, Comments.likes, User.username.label('username'), User.id.label('user_id'), Comments.post_id ).join(User, User.id==Comments.user_id).order_by('likes DESC').limit(3)
     
+    def messages(self):
+        m_sent_max_date= db.session \
+                 .query(db.func.max(Message.date).label('last_date')) \
+                 .filter(Message.from_user_id == self.id) \
+                 .group_by(Message.to_user_id) \
+                 .subquery('t')
+        m_sent = db.session \
+                 .query(Message.id, 
+                        Message.subject, 
+                        Message.from_user_id, 
+                        Message.to_user_id, 
+                        User.username.label('username'), 
+                        Message.date.label("date")) \
+                 .join(User, User.id ==Message.to_user_id) \
+                 .filter(db.and_(Message.date == m_sent_max_date.c.last_date))
+        
+        m_received_max_date= db.session \
+                 .query(db.func.max(Message.date).label('last_date')) \
+                 .filter(Message.to_user_id == self.id) \
+                 .group_by(Message.from_user_id) \
+                 .subquery('t') 
+        m_received = db.session \
+                .query(Message.id, 
+                       Message.subject, 
+                       Message.from_user_id, 
+                       Message.to_user_id, 
+                       User.username.label('username'), 
+                       Message.date.label("date")) \
+                .join(User, User.id ==Message.from_user_id) \
+                .filter(db.and_(Message.date == m_received_max_date.c.last_date ))
+        all_messages = m_sent.union(m_received).group_by('username').order_by('date DESC')
+        #query = db.session.query(m_sent.c.username).filter(db.and_(
+        #                                                 Message.id == m_sent.c.id
+        #                                                 ))
+        print all_messages.all()
+        return all_messages
+    
     def user_stream(self):
         return Post.query.join(followers, (followers.c.followed_id == Post.user_id)).filter(followers.c.follower_id == self.id).order_by(Post.created_at.desc())
      
@@ -81,3 +118,8 @@ class User(db.Model):
     
     def is_following_by_username(self, id):
         return self.followed.filter(followers.c.followed_id == id).count() > 0
+    
+    def get_username_by_id(self, id):
+        print id
+        print User.query.get(id).username
+        return User.query.get(id).username

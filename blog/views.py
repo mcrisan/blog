@@ -177,6 +177,23 @@ def unlike_comment():
                          } )
     else:
         return "-1"     
+    
+@blog.route('/featured_posts', methods=['GET','POST'])
+def featured_posts():
+ 
+    top_posts = Post.top_posts().all()
+    print top_posts
+    data=[]
+    for post in top_posts:
+        post_json = {
+           'id'         : post.id,
+           'src'        : post.image,
+           'name'       : post.title,
+           'link'       : url_for('blog.post_details', id=post.id)
+           }
+        data.append(post_json)  
+    return jsonify( { 'slider': data }  )
+    
  
 @blog.route('/post/edit/<id>', methods=['GET', 'POST'])
 @login_required

@@ -14,24 +14,55 @@ img { border: 0; }
 
 
 /* ----------------- Layout ----------------  */
-
+.content-wrapper .container{
+	width: 90%;
+}
+//.top {
+//background: transparent url(img/top-bg.gif) repeat-x;
+//	color: #fff;
+//	position: relative;
+//	height: 71px;
+//}
+/* ----------------- Primary Navigation ----------------  */
 .top {
-background: transparent url(img/top-bg.gif) repeat-x;
-	color: #fff;
-	position: relative;
-	height: 71px;
+    background-color: #474747;
+}
+.top .navbar-brand {
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    padding: 0 10px;
+    background-color: #CCC;
+    color: #474747;
+    text-decoration: none;
+}
+.top .container {
+    padding: 0;
 }
 
-.top-content, 
-.logo, 
-.secondnav
-.featured, 
-#content, 
-.footer-content, 
-#bottom {
-	margin: 0 auto;
-	width: 950px;
+.navbar-nav li a {
+    color: #CCC;
+    font-family: 'Lato', sans-serif;
 }
+.navbar-nav li a:hover {
+    background-color: #373737;
+}
+.navbar-toggle {
+    color: #009b9b;
+    font-size: 32px;
+    margin: 3px;
+    padding: 2px 5px;
+    line-height: 32px;
+}
+.navbar-toggle:hover {
+    background-color: #373737;
+}
+.navbar-nav {
+    margin: 0;
+}
+
+
+
 
 .main {
 	width: 600px;
@@ -58,16 +89,18 @@ background: transparent url(img/top-bg.gif) repeat-x;
 .logo {
 	height: 148px;
 	overflow: hidden;
+	margin-top: 50px;
 }
 
 .logo img {
-	margin: 62px 22px auto 42px;
+	//margin: 35px 22px auto 42px;
 	float: left;
 }
 
 .logo p {
-	margin-top: 67px;
-	width: 229px;
+	//margin-top: 67px;
+	margin-left: 25px;
+	//width: 229px;
 	float: left;
 	font: italic 15px/17px Georgia, serif;
 	color: #646464;
@@ -80,9 +113,37 @@ background: transparent url(img/top-bg.gif) repeat-x;
 }
 
 /* ----------------- Content ----------------  */
+.middle .container {
+    min-height: 300px;
+    padding-bottom: 20px;
+}
 .flashes{
 	color:red;
 	text-align:center;
+}
+
+.messages{
+	text-align:center;
+}
+
+.header{
+	font-weight:bold;
+	font-size:120%;
+	margin-bottom:15px;
+}
+
+.conversation .odd{
+	background-color:#f6f6f6;
+}
+
+.conversation .even{
+	background-color:#fdfdfd;
+}
+
+.conversation .row span{
+	font-size:80%;
+	font-weight: lighter;
+
 }
 
 #fb-login{
@@ -235,7 +296,9 @@ h2.cufon-h2 {
 	text-transform: uppercase;
 	font-weight: bold;
 }
-
+h2 {
+	text-align:center
+}
 h2 span {
 	background-color: #1a1e27;
 	padding: 1px 6px;
@@ -284,4 +347,48 @@ h4 {
 
 .bar-right {
     float:right;
+}
+
+/*-------------------Slider---------------- */
+.featured .smalldiv{
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    opacity: 0.6;
+    border-radius: 15px;
+    float:left;
+    margin-right:10px; 
+
+}
+
+.featured .focus{
+    background-color: blue;
+}
+
+.featured .nav{
+    position: absolute;
+    top: 270px;
+    left: 25px;
+
+}
+
+.featured .bigimg{
+    width: 500px;
+    height: 300px;
+}
+
+.featured .text{
+
+    background: none repeat scroll 0 0 #FFFFFF;
+    left: 357px;
+    top: 0px;
+    opacity: 0.7;
+    position: absolute;
+    z-index: 1;
+    word-wrap:break-word;
+    max-width: 111px;
+}
+
+.featured a{
+    text-decoration: none;
 }

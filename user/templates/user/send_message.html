@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% import 'form_macro.html' as forms %}
+{% block content %}
+  <h2>Send a new message</h2>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  <form action="{{ url_for('users.send_message') }}" class="form-horizontal" method=post>
+  	{{form.hidden_tag()}}
+ 	{{ forms.render_bootstrap_field(form.to_user, 'form-control', 'Enter Username', 'True') }}
+ 	{{ forms.render_bootstrap_field(form.subject, 'form-control', 'Enter Subject', 'True') }}
+ 	{{ forms.render_bootstrap_field(form.message, 'form-control', 'Message', 'True') }}
+    
+    <div class="form-group">
+        <div class="col-xs-offset-2 col-xs-10">
+          <button type="submit" class="btn btn-primary">Send Message</button>
+        </div>
+    </div>
+
+  </form>
+{% endblock %}
+
+
+

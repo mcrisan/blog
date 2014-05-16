@@ -8,6 +8,7 @@ from main.models.votes import Votes
 from main.models.AsociateTables import post_cat
 from main.models.AsociateTables import post_tag
 from main.models.AsociateTables import followers
+from main.models.Message import Message
 
 
 
