@@ -20,13 +20,14 @@
 					<p>{{post.excerpt}}</p>
 					<div class="readMore">
 						<span>Author: </span>
-						<em><a href="{{ url_for('blog.show_user', username=post.users.username) }}">{{post.users.username}}  </a></em>
+						<em><a href="{{ url_for('blog.show_user', username=post.users.username) }}">{{post.users.username}} </a> |</em>
 						{% if (g.user.is_authenticated()) and (g.user != post.users) %}
 							{% if g.user.is_following(post.users) %}
-							<em><a href="{{ url_for('users.unfollow_user', id=post.users.id) }}">Unfollow</a></em><br />				
+							<em><a href="{{ url_for('users.unfollow_user', id=post.users.id) }}">Unfollow</a> |</em>				
 							{% else %}
-							<em><a href="{{ url_for('users.follow_user', id=post.users.id) }}">Follow</a></em><br />
+							<em><a href="{{ url_for('users.follow_user', id=post.users.id) }}">Follow</a> |</em>
 							{% endif %}
+							<em><a href="{{ url_for('users.send_message') }}?id={{post.users.id}}">Send Message</a></em><br />
 						{% else %}
 						 <br />	
 						{% endif %}	

@@ -8,6 +8,7 @@ from main.email import follower_notification, email
 from user.forms import SendMessage
 from flask.ext.sqlalchemy import Pagination
 import pprint
+from datetime import datetime
 
 @users.route('/test')
 @login_required
@@ -73,6 +74,7 @@ def send_message(conv=0):
 @users.route('/user/conversation' , methods=['POST'])
 @login_required
 def send_conv_response(conv=0):
+    print datetime.now();
     if request.method=='POST':
         print request.form['to_user']
         to_user = User.query.filter(User.username == request.form['to_user']).first().id 

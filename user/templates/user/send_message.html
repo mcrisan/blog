@@ -5,7 +5,11 @@
   {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
   <form action="{{ url_for('users.send_message') }}" class="form-horizontal" method=post>
   	{{form.hidden_tag()}}
+  	{% if request.args.get('id') is none %}
  	{{ forms.render_bootstrap_field(form.to_user, 'form-control', 'Enter Username', 'True') }}
+ 	{% else %}
+ 	{{ forms.render_bootstrap_field(form.to_user, 'form-control', 'Enter Username', 'True', g.user.get_username_by_id(request.args.get('id'))) }}
+ 	{% endif %}
  	{{ forms.render_bootstrap_field(form.subject, 'form-control', 'Enter Subject', 'True') }}
  	{{ forms.render_bootstrap_field(form.message, 'form-control', 'Message', 'True') }}
     
