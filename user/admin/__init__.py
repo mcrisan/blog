@@ -1,0 +1,1 @@
+from user.admin.views import UserView

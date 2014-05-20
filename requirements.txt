@@ -1,1 +1,2 @@
 python-twitter
+flask-admin

@@ -6,7 +6,11 @@ from momentjs import momentjs
 from config import ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
 import os
 from flask.ext.mail import Mail
+from flask.ext.admin import Admin
 
+#from blog.admin import MyView
+#from blog.admin.views import MyView
+#from blog import MyView 
 basedir = os.path.abspath(os.path.dirname(__file__))
 mainapp = Blueprint('main', __name__, template_folder='templates')
 
@@ -15,6 +19,20 @@ app = Flask(__name__)
 app.config.from_object('config')
 app.jinja_env.globals['momentjs'] = momentjs
 db = SQLAlchemy(app)
+mail = Mail(app)
+from blog.admin import PostView, TagsView, CategoriesView, CommentsView
+from user.admin import UserView
+from flask.ext.admin.contrib.sqla import ModelView
+from main.models import User, Tags, Category
+admin = Admin(app)
+#admin.add_view(MyView())
+#admin.add_view(ModelView(User, db.session))
+admin.add_view(UserView(db.session))
+admin.add_view(TagsView(db.session))
+admin.add_view(CategoriesView(db.session))
+admin.add_view(CommentsView(db.session))
+#admin.add_view(ModelView(Category, db.session))
+admin.add_view(PostView(db.session))
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -24,7 +42,7 @@ login_manager.login_view = "/login"
 #from main.models import post_cat
 #from main.models import Post
 #from main.models import Category
-mail = Mail(app)
+
 from main import models
 from main import views
 

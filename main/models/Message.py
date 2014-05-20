@@ -18,3 +18,6 @@ class Message(db.Model):
         self.from_user_id = from_user_id
         self.to_user_id = to_user_id
         self.date = datetime.now()
+        
+    def __repr__(self):
+        return '%s' % self.subject

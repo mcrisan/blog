@@ -10,6 +10,9 @@ class Category(db.Model):
     def __init__(self, name=None):
         self.name = name
         
+    def __repr__(self):
+        return ' %s' % self.name    
+        
     def list_of_categories(self, categories):
         cat =[]
         for category in categories:
@@ -27,6 +30,3 @@ class Category(db.Model):
     @staticmethod
     def posts_without_cat():
         posts_with_cat =  db.session.query(post_cat.c.post_id).group_by(post_cat.c.post_id) #, db.func.count(post_cat.c.category_id).label("count")).group_by(post_cat.c.post_id)
-        print "posts with categories"
-        print len(posts_with_cat.all());
-        print "done"

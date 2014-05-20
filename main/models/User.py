@@ -24,7 +24,7 @@ class User(db.Model):
         backref = db.backref('followers', lazy = 'dynamic'), 
         lazy = 'dynamic')
     
-    def __init__(self, username, password, email, type=0, token=None, social=None):
+    def __init__(self, username=None, password=None, email=None, type=0, token=None, social=None):
         self.username = username
         self.password = password
         self.email = email
@@ -33,7 +33,7 @@ class User(db.Model):
         self.social = social
 #
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '%s' % self.username
     
     def is_active(self):
         # Here you should write whatever the code is
@@ -45,6 +45,13 @@ class User(db.Model):
 
     def is_authenticated(self):
         return True
+    
+    def is_admin(self):
+        print self.type
+        if self.type == 1:
+            return True
+        else:
+            return False
     
     def get_id(self):
         return self.id

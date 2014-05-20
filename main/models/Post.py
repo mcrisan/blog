@@ -21,7 +21,7 @@ class Post(db.Model):
     tags = db.relationship('Tags', secondary=post_tag,
         backref=db.backref('tposts', lazy='dynamic'))
     
-    def __init__(self, title, excerpt, description, image, user_id, categories, tags):
+    def __init__(self, title=None, excerpt=None, description=None, image=None, user_id=None, categories=[], tags=[]):
         self.title = title
         self.excerpt = excerpt
         self.description = description
@@ -29,7 +29,10 @@ class Post(db.Model):
         self.user_id = user_id
         self.categories = categories
         self.tags = tags
-        
+
+    def __repr__(self):
+        return '%s' % self.title   
+         
     def dump_datetime(self, value):
         """Deserialize datetime object into string form for JSON processing."""
         if value is None:
@@ -56,9 +59,6 @@ class Post(db.Model):
            'excerpt'    : self.excerpt,
            'description': self.description
            }       
-    
-    def __repr__(self):
-        return '<Post %r>' % self.title
     
     @staticmethod
     def top_posts():

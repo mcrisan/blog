@@ -6,4 +6,3 @@ from blog import views
 
 
 
-

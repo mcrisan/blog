@@ -11,6 +11,9 @@ class Tags(db.Model):
     def __init__(self, name=None, count=None):
         self.name = name 
         self.count = count   
+        
+    def __repr__(self):
+        return '%s' % self.name    
      
     def list_of_tags(self, tags):
         tag_names = tags.split(",") 
