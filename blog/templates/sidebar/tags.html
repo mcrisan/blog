@@ -1,0 +1,18 @@
+<div class ="tags">
+<h2 class="cufon-h2"><span>Tags</span></h2>
+	{% for tag in tags %}
+	{% if tag.tposts.all()|length > 0 %}
+		{% if tag.tposts.all()|length < 2 %}
+			<span class="tag1"><a href="{{ url_for('blog.posts_by_tag', tag=tag.name)}}">{{tag.name}}</a></span>
+			{% elif tag.tposts.all()|length < 3 %}
+			<span class="tag2"><a href="{{ url_for('blog.posts_by_tag', tag=tag.name)}}">{{tag.name}}</a></span>
+			{% else %}
+			<span class="tag3"><a href="{{ url_for('blog.posts_by_tag', tag=tag.name)}}">{{tag.name}}</a></span>
+		{% endif %}
+	{% endif %}	
+	{% else %}
+		<p>No tags</p>
+		
+	{% endfor %}	
+    
+</div>

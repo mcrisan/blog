@@ -45,9 +45,7 @@ def ftest():
                        "description": "This is a longer description of the attachment",
                        "picture": "http://www.seeanz.com/images/albino-wallaby.jpg"}
         graph.put_wall_post("Nature at it;s best", attachment)
-        profile = graph.get_object("me")
-  
-        pprint.pprint(profile)   
+        profile = graph.get_object("me")  
     return "123 "
 
 @mainapp.route('/ftest2', methods=['GET', 'POST'])
@@ -80,8 +78,7 @@ def facebook_login():
         else:
             user.token = token 
         db.session.commit()          
-        login_user(user)    
-        pprint.pprint(profile['username'])   
+        login_user(user)       
     return redirect(url_for('blog.index')) 
 
 @mainapp.route('/twitter_login', methods=['GET', 'POST'])
@@ -165,7 +162,6 @@ def top_users():
     top_comments = User.top_comments()
     #pprint.pprint(top_comments.all())
     Category.posts_without_cat()
-    print(top_comments.all())
     #return top_users.all()
     return render_template('top_users.html', users=top_users)
 
@@ -188,8 +184,9 @@ def before_request():
 
 @app.context_processor
 def load_sidebar():
-    tag = Tags()
-    results = tag.load_tags()
+    #tag = Tags()
+    #results = tag.load_tags()
+    results = Tags.query.all()
     top_users = User.top_users().all()
     top_posts = Post.top_posts().all()
     top_comments = User.top_comments().all()

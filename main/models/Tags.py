@@ -1,5 +1,4 @@
 from main import db
-from main.models import Post
 
 class Tags(db.Model):
     __tablename__ = 'tags'
@@ -34,6 +33,4 @@ class Tags(db.Model):
             str_list.append(tag.name) 
         return ', '.join(str_list)
     
-    def load_tags(self):
-        query = db.session.query(Tags.name, Tags.id, db.func.count(Post.id)).join(Post.tags).group_by(Tags.id)  
-        return query 
+    

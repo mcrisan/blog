@@ -7,6 +7,7 @@
 
 {% block list_row_actions %}
 {{ super() }}
-as
+<a href="{{url_for('postview.approve', id=row.id )}}">A </a>
+<a href="{{url_for('postview.reject', id=row.id )}}">R </a>
 
 {% endblock %}

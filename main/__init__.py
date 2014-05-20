@@ -28,11 +28,12 @@ admin = Admin(app)
 #admin.add_view(MyView())
 #admin.add_view(ModelView(User, db.session))
 admin.add_view(UserView(db.session))
+admin.add_view(PostView(db.session, endpoint="postview"))
 admin.add_view(TagsView(db.session))
 admin.add_view(CategoriesView(db.session))
 admin.add_view(CommentsView(db.session))
 #admin.add_view(ModelView(Category, db.session))
-admin.add_view(PostView(db.session))
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)

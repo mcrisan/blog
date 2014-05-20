@@ -3,34 +3,42 @@ from flask.ext.login import current_user
 from flask.ext.admin.contrib.sqla import ModelView
 from wtforms.fields import SelectField
 from main.models import Post, Tags, Category, User, Comments
+from main import db
 from flask.ext.admin.contrib.sqla import filters
 from blog.forms import CreatePostForm
 from flask_security.forms import Required
 from wtforms import PasswordField
 from flask.ext.wtf.html5 import EmailField, URLField
+from flask import url_for, redirect
 #from main import admin
 
    
 class PostView(ModelView):
-    #form = CreatePostForm
+    #form = CreatePostForm       
     list_template = 'admin/post_list.html'
-    def is_accessible(self):
-        if current_user.is_authenticated():
-            return current_user.is_admin()
-        else:
-            return False
-
     inline_models = (Comments,)
-    column_sortable_list = ('title', 'excerpt', 'description')
+    column_sortable_list = (('title', Post.title), ('excerpt', Post.excerpt), ('description', Post.description), ('created_at', Post.created_at))
     column_searchable_list = ('title', Post.title)
-    column_list = ('title', 'excerpt', 'description', 'user_id', 'categories', 'comments', 'tags')
-    column_filters = ('title',
+    column_list = ('title', 'excerpt', 'description', 'created_at', 'users', 'categories', 'comments', 'tags', 'status')
+    column_filters = ('status',
+                      'title',
                       'excerpt',
                       'description')
-    form_columns = ('users', 'title', 'excerpt', 'description', 'image', 'categories', 'tags', 'comments')
-    form_overrides = dict(image=URLField)
+    column_choices = {
+        'status': [
+            (0, 'Pending'),
+            (1, 'Approved'),
+            (2, 'Rejected'),
+        ]
+    }
+    column_labels = dict(created_at='Date', )
+    form_columns = ('users', 'title', 'excerpt', 'description', 'image', 'categories', 'tags', 'comments', 'status')
+    form_overrides = dict(status=SelectField, image=URLField)
     form_args = dict(
         # Pass the choices to the `SelectField`
+        status=dict(coerce=int,
+            choices=[(0, 'Pending'), (1, 'Approved'), (1, 'Rejected')]
+        ),
         users=dict(validators=[Required()]
         ),
         title=dict( validators=[Required()]
@@ -54,6 +62,28 @@ class PostView(ModelView):
             'fields': (User.username,)
         }
     }
+    
+    def is_accessible(self):
+        if current_user.is_authenticated():
+            return current_user.is_admin()
+        else:
+            return False
+        
+    @expose('/approve/<id>')
+    def approve(self, id):
+        post = Post.query.get(id)
+        post.status=1
+        db.session.commit() 
+        url = url_for('.index_view')
+        return redirect(url)  
+    
+    @expose('/reject/<id>')
+    def reject(self, id):
+        post = Post.query.get(id)
+        post.status=2
+        db.session.commit() 
+        url = url_for('.index_view')
+        return redirect(url)  
 
     def __init__(self, session, **kwargs):
         super(PostView, self).__init__(Post, session, **kwargs) 

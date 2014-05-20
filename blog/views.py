@@ -13,45 +13,49 @@ from datetime import datetime
 from elasticsearch import Elasticsearch
 import re
 from httplib import HTTPResponse
+from werkzeug.exceptions import abort
 
 @blog.route('/')
-@blog.route('/index', methods = ['GET', 'POST'])
-@blog.route('/index/<int:page>', methods = ['GET', 'POST'])
+@blog.route('/index', methods = ['GET'])
+@blog.route('/index/<int:page>', methods = ['GET'])
 def index(page = 1):
-    posts = Post.query.order_by(Post.created_at.desc()).paginate(page, app.config['POSTS_PER_PAGE'], False)  # @UndefinedVariable
+    posts = Post.query.filter(Post.status==1) \
+                      .order_by(Post.created_at.desc()) \
+                      .paginate(page, app.config['POSTS_PER_PAGE'], False)  # @UndefinedVariable
     return render_template('index.html', posts=posts)  
 
 
 @blog.route('/cat/<category>')
-def posts_by_category(category):
-    cat = Category.query.filter_by(name=category).first()  # @UndefinedVariable
-    try:
-        posts = cat.posts
-    except:
-        posts=""    
+@blog.route('/cat/<category>/<int:page>', methods = ['GET'])
+def posts_by_category(category, page = 1):
+    post = Post()  
+    posts = post.posts_category_status(category, 1).paginate(page, app.config['POSTS_PER_PAGE'], False)    
     return render_template('posts_categories.html', category=category, posts=posts) 
 
 
 @blog.route('/tag/<tag>')
-def posts_by_tag(tag):
-    tags = Tags.query.filter_by(name=tag).first()  # @UndefinedVariable
-    try:
-        posts = tags.tposts
-    except:
-        posts=""    
+@blog.route('/tag/<tag>/<int:page>', methods = ['GET'])
+def posts_by_tag(tag, page = 1):   
+    post = Post()  
+    posts = post.posts_tag_status(tag, 1).paginate(page, app.config['POSTS_PER_PAGE'], False)       
     return render_template('post_tag.html', tag=tag, posts=posts)  
 
 
 @blog.route('/user/<username>')
-@blog.route('/user/<username>/<int:page>', methods = ['GET', 'POST'])
+@blog.route('/user/<username>/<int:page>', methods = ['GET'])
 def show_user(username, page=1):
     user = User.query.filter_by(username=username).first_or_404()  # @UndefinedVariable
-    #posts = user.posts_by_user().paginate(page, app.config['POSTS_PER_PAGE'], False) 
-    user_posts = user.posts_by_user().paginate(page, app.config['POSTS_PER_PAGE'], False)
-    posts = user.user_stream().paginate(page, app.config['POSTS_PER_PAGE'], False) 
+    user_posts = user.posts_by_user(1).paginate(page, app.config['POSTS_PER_PAGE'], False)
+    pending_posts = user.posts_by_user(0).all()
+    rejected_posts = user.posts_by_user(2).all()
+    posts = user.user_stream(1).paginate(page, app.config['POSTS_PER_PAGE'], False) 
     if current_user.username == username:
         head = "Latest posts from you and people you follow "
-        return render_template('user_details.html', user=user, posts=posts, head = head)
+        return render_template('user_details.html', 
+                               user=user, posts=posts, 
+                               pending_posts=pending_posts, 
+                               rejected_posts=rejected_posts, 
+                               head=head)
     else:
         head = "Latest posts made by %s " % username
         return render_template('user_details.html', user=user, posts=user_posts, head = head)
@@ -60,8 +64,7 @@ def show_user(username, page=1):
 @blog.route('/create_post', methods=['GET', 'POST'])
 @login_required
 def create_post():
-    form = CreatePostForm()
-    #flash(u'You need to login to perform the required operation') 
+    form = CreatePostForm() 
     if form.validate_on_submit():
         categories = form.categories.data
         tags = form.tag.data
@@ -69,7 +72,13 @@ def create_post():
         cat = categ.list_of_categories(categories)
         tag = Tags()
         list_tags = tag.list_of_tags(tags)
-        post = Post(form.title.data, form.excerpt.data, form.description.data, form.image.data, current_user.id, cat, list_tags)
+        post = Post(form.title.data, 
+                    form.excerpt.data, 
+                    form.description.data, 
+                    form.image.data, 
+                    current_user.id, cat, 
+                    list_tags
+                    )
         db.session.add(post)  # @UndefinedVariable
         try:
             db.session.commit()  # @UndefinedVariable
@@ -96,7 +105,9 @@ def post_details(id):
                 return redirect(url_for('blog.post_details', id=post.id))
             return redirect(url_for('blog.post_details', id=post.id)) 
         else: 
-            flash(u'You need to be logged in')              
+            flash(u'You need to be logged in')   
+    if (post.status !=-1)and(current_user != post.users):
+        abort(404)                  
     return render_template('post_details.html', post=post, comments=comments)
  
  
@@ -122,7 +133,6 @@ def like_comment():
         id_comment = request.form['id_comment']
         comment = Comments.query.get(id_comment);
         vote_status = comment.vote_status(current_user.id, "like");
-        print vote_status;
         if vote_status is None:
             new_vote = Votes(comment.id, current_user.id, "like")
             db.session.add(new_vote)
@@ -153,7 +163,6 @@ def unlike_comment():
         id_comment = request.form['id_comment']
         comment = Comments.query.get(id_comment);
         vote_status = comment.vote_status(current_user.id, "unlike");
-        print vote_status;
         if vote_status is None:
             new_vote = Votes(comment.id, current_user.id, "unlike")
             db.session.add(new_vote)
@@ -180,9 +189,7 @@ def unlike_comment():
     
 @blog.route('/featured_posts', methods=['GET','POST'])
 def featured_posts():
- 
     top_posts = Post.top_posts().all()
-    print top_posts
     data=[]
     for post in top_posts:
         post_json = {
@@ -220,6 +227,7 @@ def edit_post(id):
         post.categories = cat
         post.tags = list_tags
         post.updated_at = datetime.now()
+        post.status = 1
         try:
             db.session.commit()
             post2 = post.serialize2()
@@ -265,7 +273,6 @@ def search_results(query):
 @blog.route('/autocomplete', methods=['GET', 'POST'])
 def autocomplete():
     data = request.args.get('term');
-    print data
     es = Elasticsearch()
     res = es.search(
     index='post',
@@ -281,12 +288,10 @@ def autocomplete():
     })
     list_title =[]
     for data in res['hits']['hits']: 
-        #print data['_source']['title']
         list_title.append({
                            'title'      : data['_source']['title'],
                            'id'      : data['_source']['id']
-                           } )
-    print list_title    
+                           } )   
     return jsonify( { 'posts': list_title } )    
 
 @blog.route('/post/delete/<id>', methods=['GET', 'POST'])

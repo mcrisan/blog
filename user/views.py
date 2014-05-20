@@ -104,7 +104,11 @@ def view_conversation(from_user, to_user):
         username = User.query.get(to_user).username
     else:
         username = User.query.get(from_user).username    
-    messages = Message.query.filter(db.or_(db.and_(Message.from_user_id==from_user, Message.to_user_id==to_user), db.and_(Message.from_user_id==to_user, Message.to_user_id==from_user))).order_by(Message.date.desc()).all()
+    messages = Message.query.filter(
+                                    db.or_(
+                                           db.and_(Message.from_user_id==from_user, Message.to_user_id==to_user), 
+                                           db.and_(Message.from_user_id==to_user, Message.to_user_id==from_user))) \
+                      .order_by(Message.date.desc()).all()
     #return "111"
     return render_template('user/conversation.html', messages=messages, username=username)
  

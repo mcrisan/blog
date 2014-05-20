@@ -47,7 +47,6 @@ class User(db.Model):
         return True
     
     def is_admin(self):
-        print self.type
         if self.type == 1:
             return True
         else:
@@ -56,16 +55,29 @@ class User(db.Model):
     def get_id(self):
         return self.id
     
-    def posts_by_user(self):
-        return Post.query.join(User, (User.id == Post.user_id)).filter(User.id == self.id).order_by(Post.created_at.desc())
+    def posts_by_user(self, status):
+        return Post.query.join(User, (User.id == Post.user_id)) \
+                         .filter(db.and_(User.id == self.id, Post.status==status)) \
+                         .order_by(Post.created_at.desc())
     
     @staticmethod
     def top_users():
-        return db.session.query(User.username, User.id, db.func.count(Post.user_id).label('total')).outerjoin(Post, ( User.id == Post.user_id)).group_by(User.id).order_by('total DESC').limit(5)
+        return db.session.query(User.username, User.id, db.func.count(Post.user_id).label('total')) \
+                         .outerjoin(Post, ( User.id == Post.user_id)) \
+                         .group_by(User.id) \
+                         .order_by('total DESC').limit(5)
     
     @staticmethod
     def top_comments():
-        return db.session.query(Comments.id, Comments.comment, Comments.likes, User.username.label('username'), User.id.label('user_id'), Comments.post_id ).join(User, User.id==Comments.user_id).order_by('likes DESC').limit(3)
+        return db.session.query(Comments.id, 
+                                Comments.comment, 
+                                Comments.likes, 
+                                User.username.label('username'), 
+                                User.id.label('user_id'), 
+                                Comments.post_id 
+                                ) \
+                         .join(User, User.id==Comments.user_id) \
+                         .order_by('likes DESC').limit(3)
     
     def messages(self):
         m_sent_max_date= db.session \
@@ -101,14 +113,19 @@ class User(db.Model):
         #query = db.session.query(m_sent.c.username).filter(db.and_(
         #                                                 Message.id == m_sent.c.id
         #                                                 ))
-        print all_messages.all()
         return all_messages
     
-    def user_stream(self):
-        return Post.query.join(followers, (followers.c.followed_id == Post.user_id)).filter(followers.c.follower_id == self.id).order_by(Post.created_at.desc())
+    def user_stream(self, status):
+        return Post.query.join(followers, (followers.c.followed_id == Post.user_id)) \
+                         .filter(db.and_(followers.c.follower_id == self.id, Post.status==status)) \
+                         .order_by(Post.created_at.desc())
      
     def user_stream2(self):
-        return db.session.query( Post.title, Comments.comment ).join(followers, (followers.c.followed_id == Post.user_id)).join(Comments, (Comments.post_id == Post.id)).filter(followers.c.follower_id == self.id).order_by(Post.created_at.desc()) 
+        return db.session.query( Post.title, Comments.comment ) \
+                         .join(followers, (followers.c.followed_id == Post.user_id)) \
+                         .join(Comments, (Comments.post_id == Post.id)) \
+                         .filter(followers.c.follower_id == self.id) \
+                         .order_by(Post.created_at.desc()) 
        
     def follow(self, user):
         if not self.is_following(user):
@@ -127,6 +144,4 @@ class User(db.Model):
         return self.followed.filter(followers.c.followed_id == id).count() > 0
     
     def get_username_by_id(self, id):
-        print id
-        print User.query.get(id).username
         return User.query.get(id).username

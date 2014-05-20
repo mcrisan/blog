@@ -1,9 +1,7 @@
 from main import db
 from datetime import datetime
 from main.models.votes import Votes
-#from main.models.User import User
 
-#from main.models import User
 
 class Comments(db.Model):
     __tablename__ = 'comments'

@@ -3,6 +3,13 @@
 {% import 'comment_macro.html' as com %}
 {% import 'form_macro.html' as forms %}
 {% block content %}
+{% if post.user_id == g.user.id %}
+	{% if post.status == 0 %}
+	<h2>Post is pending for approval</h2>
+	{% elif post.status == 2 %}
+	<h2>Post was rejected</h2>
+	{% endif %}	
+{% endif %}
 		<div class="post">
 		{% if post.user_id == g.user.id %}
 		<div align="right">
