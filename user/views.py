@@ -1,12 +1,11 @@
 from user import users
-from flask import Flask, request, session, g, redirect, url_for, abort, \
+from flask import request, g, redirect, url_for, \
      render_template, flash
-from main import db, app
+from main import db
 from main.models import User, Message
-from flask.ext.login import LoginManager, login_required, login_user, logout_user, current_user
-from main.email import follower_notification, email 
+from flask.ext.login import login_required, current_user
+from main.email import follower_notification 
 from user.forms import SendMessage
-from flask.ext.sqlalchemy import Pagination
 import pprint
 from datetime import datetime
 
