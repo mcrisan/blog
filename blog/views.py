@@ -1,18 +1,14 @@
-import pprint
-import json
 from main import db
 from blog import blog
 from main.models import User, Post, Category, Comments, Tags, Votes
 from flask import request, g, redirect, url_for, \
      render_template, flash, jsonify
-from flask.ext.login import LoginManager, login_required, login_user, logout_user, current_user
-from flask.ext.sqlalchemy import Pagination
+from flask.ext.login import login_required, current_user
 from main import app
 from blog.forms import CreatePostForm
 from datetime import datetime
 from elasticsearch import Elasticsearch
 import re
-from httplib import HTTPResponse
 from werkzeug.exceptions import abort
 
 @blog.route('/')

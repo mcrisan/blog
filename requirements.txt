@@ -1,2 +1,3 @@
 python-twitter
 flask-admin
+Flask-RESTful
