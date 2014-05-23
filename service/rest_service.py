@@ -6,6 +6,7 @@ from requests import put, get
 import urllib2
 from elasticsearch import Elasticsearch
 from flask_login import current_user
+import pprint
 
 @service.route('/posts', methods = ['GET'])
 def get_posts():
@@ -15,8 +16,11 @@ def get_posts():
     for post in posts:
         post2 = post.serialize2()
         post_list.append(post2)
-    json = jsonify( { 'posts': post_list } )    
-    return json
+    json_data = jsonify( { 'posts': post_list } )
+    #data = json.loads(json_data)
+    #pprint.pprint(data)
+    pprint.pprint(json_data)
+    return json_data
 
 
 

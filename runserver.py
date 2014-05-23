@@ -8,7 +8,7 @@ from flask.ext.admin import Admin
 from blog.admin import PostView, TagsView, CategoriesView, CommentsView
 from user.admin import UserView
 from flask.ext.restful import Api
-from service.restful_service import UserAPI, UsersListAPI, PostAPI
+from service.restful_service import UserAPI, UsersListAPI, PostAPI, TokenAPI
 
 app.register_blueprint(mainapp, url_prefix='')
 app.register_blueprint(blog, url_prefix='')
@@ -25,9 +25,10 @@ admin.add_view(CategoriesView(db.session))
 admin.add_view(CommentsView(db.session))
 
 api = Api(app)
-api.add_resource(UserAPI, '/usersapi/<int:id>', endpoint = 'user')
-api.add_resource(UsersListAPI, '/userlistapi', endpoint = 'userlists')
-api.add_resource(PostAPI, '/postapi/<int:id>', endpoint = 'post')
+api.add_resource(UserAPI, '/api/user/<int:id>', endpoint = 'user')
+api.add_resource(TokenAPI, '/api/token', endpoint = 'token')
+api.add_resource(UsersListAPI, '/api/users', endpoint = 'userlists')
+api.add_resource(PostAPI, '/api/post/<int:id>', endpoint = 'post')
 
 #if not app.debug:
 #    import logging

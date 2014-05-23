@@ -27,3 +27,12 @@ request_token_url = 'https://api.twitter.com/oauth/request_token'
 access_token_url = 'https://api.twitter.com/oauth/access_token'
 authenticate_url = 'https://api.twitter.com/oauth/authenticate'
 callback_uri = 'http://127.0.0.1:5000/twitter_authenticated'
+
+# redis
+REDIS_HOST = "localhost"
+REDIS_PASSWORD = "password"
+REDIS_PORT = 6379
+REDIS_DATABASE = 5
+
+#flask security
+TOKEN_AUTHENTICATION_KEY = 'auth_token'

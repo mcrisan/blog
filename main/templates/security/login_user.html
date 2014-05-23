@@ -11,7 +11,7 @@
   </div>
   <div class="col-xs-offset-3 fb-login-button" data-max-rows="1" data-size="xlarge" data-show-faces="false" data-auto-logout-link="false" scope="email,user_birthday, manage_pages" onlogin="checkLoginState();">Sign in with Facebook</div><br/>
   <h3 style="text-align:center">Or</h3>
-  <form action="{{ url_for('main.user_login') }}?next={{ request.args.get('next') }}" class="form-horizontal" method=post>
+  <form action="{{ url_for('main.login') }}?next={{ request.args.get('next') }}" class="form-horizontal" method=post>
   	{{form.hidden_tag()}}
  	{{ forms.render_bootstrap_field(form.username, 'form-control', 'Enter Username', 'True') }}
     {{ forms.render_bootstrap_field(form.password, 'form-control', 'Enter Password', 'True') }}

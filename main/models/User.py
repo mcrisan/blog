@@ -1,19 +1,27 @@
 from main import db
+from datetime import datetime
 from main.models.Post import Post
-from main.models.AsociateTables import followers
+from main.models.AsociateTables import followers, roles_users
 from main.models.Comments import Comments
 from main.models.Message import Message
+from flask.ext.security import  UserMixin
+import md5
+from config import app_secret
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = "users"   
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(80))
     email = db.Column(db.String(120), unique=True)
+    active = db.Column(db.Boolean())
+    confirmed_at = db.Column(db.DateTime(), default= datetime.now())
     token = db.Column(db.Text())
     oauth_token = db.Column(db.Text())
     oauth_secret = db.Column(db.Text())
     social = db.Column(db.String(50))
+    roles = db.relationship('Role', secondary=roles_users,
+                            backref=db.backref('users', lazy='dynamic'))
     posts = db.relationship("Post", backref="users")
     comments = db.relationship("Comments", backref="ucomments")
     type = db.Column(db.Integer)
@@ -24,15 +32,23 @@ class User(db.Model):
         backref = db.backref('followers', lazy = 'dynamic'), 
         lazy = 'dynamic')
     
-    def __init__(self, username=None, password=None, email=None, type=0, token=None, social=None):
+    def __init__(self, username=None, password=None, email=None, type=0, token=None, social=None, active=None, roles=[]):
         self.username = username
         self.password = password
         self.email = email
         self.type = type
         self.token = token
         self.social = social
+        self.active = active
+        self.roles = roles
+        
+#    def get_auth_token(self):       
+#        salted_password = self.password + app_secret
+#        return md5.new(salted_password).hexdigest()
+#        #data = [str(self.id), self.password]
+#        #return self.
 #
-    def __repr__(self):
+    def __unicode__(self):
         return '%s' % self.username
     
     def is_active(self):

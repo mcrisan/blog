@@ -55,7 +55,7 @@
 		                <li id="logout"><a href="{{ url_for('main.logout') }}">Log out</a></li>
 		            {% else %}
 			            <li><a href="{{ url_for('main.register') }}">Register</a></li>
-			    		<li><a href="{{ url_for('main.login') }}">Log in</a></li>
+			    		<li><a href="{{ url_for('main.user_login') }}">Log in</a></li>
 			    		{#<li><a href=""><fb:login-button autologoutlink="false" scope="email,user_birthday, manage_pages"></fb:login-button></a></li>#}
 		            {% endif %}
 	            </ul>

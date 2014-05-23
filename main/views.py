@@ -1,12 +1,14 @@
 
 from main import mainapp, login_manager
+from main import user_datastore, security
 from main import app
-from models import User, Category, Tags, Comments, Post
+from models import User, Category, Tags, Comments, Post, Role
 from blog.forms import LoginForm, RegisterForm, SearchForm
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash
 from main import db
-from flask.ext.login import LoginManager, login_required, login_user, logout_user, current_user
+#from flask.ext.login import LoginManager, login_required, login_user, logout_user, current_user
+from flask.ext.security import login_required, login_user, logout_user, current_user
 import pprint
 import facebook
 from config import app_id, app_secret, consumer_key, consumer_secret, request_token_url, access_token_url, authenticate_url, callback_uri
@@ -16,8 +18,8 @@ import twitter
 import webbrowser
 import urllib
 
-@mainapp.route('/login', methods=['GET', 'POST'])
-def login():
+@mainapp.route('/user_login', methods=['GET', 'POST'])
+def user_login():
         form = LoginForm()
         next = request.args.get('next')
         if form.validate_on_submit():
@@ -32,6 +34,10 @@ def login():
             #return (redirect(next)  or url_for('blog.index'))
         return render_template('login.html', form=form)
 
+@security.login_context_processor
+def security_context_processor():
+    form = LoginForm()
+    return dict(form=form)
 
 @mainapp.route('/ftest', methods=['GET', 'POST'])
 def ftest():
@@ -73,13 +79,17 @@ def facebook_login():
         
         user = User.query.filter_by(username=username).first()
         if not user:
-            user = User(username, password, email, token, social)
-            db.session.add(user)           
+            role = Role.query.filter(Role.name=="User").first()
+            user = user_datastore.create_user(username=username, email=email, password=password, token=token, social=social)
+            user_datastore.add_role_to_user(user, role)
+            #user = User(username, password, email, token, social)
+            #db.session.add(user)           
         else:
             user.token = token 
         db.session.commit()          
         login_user(user)       
     return redirect(url_for('blog.index')) 
+
 
 @mainapp.route('/twitter_login', methods=['GET', 'POST'])
 def twitter_login():
@@ -97,14 +107,18 @@ def twitter_login():
         raise Exception("Invalid response from Twitter.")
 
     session['request_token'] = dict(cgi.parse_qsl(content))
-
+    print "session is"
+    print session['request_token']
     url = "%s?oauth_token=%s" % (authenticate_url,
         session['request_token']['oauth_token'])
     return redirect(url) 
 
+
 @mainapp.route('/twitter_authenticated', methods=['GET', 'POST'])
 def twitter_authenticated():
     pincode = request.args.get('oauth_verifier')
+    print "12232"
+    print pincode
     consumer = oauth.Consumer(key=consumer_key, secret=consumer_secret)
     token = oauth.Token(session['request_token']['oauth_token'],
                         session['request_token']['oauth_token_secret'])
@@ -129,11 +143,14 @@ def twitter_authenticated():
     access_token = dict(cgi.parse_qsl(content))   
     user = User.query.filter_by(username=access_token['screen_name']).first()
     if user is None:
-        user = User(access_token['screen_name'], "234", "email", type=0)
+        role = Role.query.filter(Role.name=="User").first()
+        user = user_datastore.create_user(username=access_token['screen_name'], email="email", password="234")
+        user_datastore.add_role_to_user(user, role)
+        #user = User(access_token['screen_name'], "234", "email", type=0)
         user.oauth_token = access_token['oauth_token']
         user.oauth_secret = access_token['oauth_token_secret']
         user.social = "twitter"
-        db.session.add(user)
+        #db.session.add(user)
         db.session.commit()
     login_user(user)
     return redirect(url_for('blog.index'))  
@@ -144,15 +161,15 @@ def register():
     if request.method == 'GET':
         return render_template('register.html', form=form)
     if form.validate_on_submit():
-        user = User(form.user.username, form.user.password, form.user.email)
-        user.followers.append(user)
-        db.session.add(user)
+        role = Role.query.filter(Role.name=="User").first()
+        user = user_datastore.create_user(username=form.user.username, email=form.user.email, password=form.user.password)
+        user_datastore.add_role_to_user(user, role)
         try:
             db.session.commit()
         except:
             flash('User or email already exists')
             return redirect(url_for('main.register'))
-        return redirect(url_for('main.login'))
+        return redirect(url_for('main.user_login'))
     return render_template('register.html', form=form)
 
 @mainapp.route('/top_users' , methods=['GET','POST'])
@@ -181,6 +198,15 @@ def load_user(userid):
 def before_request():
     g.user = current_user
     g.search_form = SearchForm()
+
+@app.before_request    
+def check_for_admin(*args, **kw):
+    if request.path.startswith('/admin/'):
+        if current_user.is_authenticated():
+            if not current_user.is_admin():
+                return redirect(url_for('main.login'))
+        else:
+            return redirect(url_for('main.login'))    
 
 @app.context_processor
 def load_sidebar():

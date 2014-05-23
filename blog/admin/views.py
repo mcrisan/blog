@@ -1,16 +1,12 @@
-from flask.ext.admin import BaseView, expose
+from flask.ext.admin import expose
 from flask.ext.login import current_user
 from flask.ext.admin.contrib.sqla import ModelView
 from wtforms.fields import SelectField
-from main.models import Post, Tags, Category, User, Comments
+from main.models import Post, Tags, Category, User, Comments, Role
 from main import db
-from flask.ext.admin.contrib.sqla import filters
-from blog.forms import CreatePostForm
 from flask_security.forms import Required
-from wtforms import PasswordField
-from flask.ext.wtf.html5 import EmailField, URLField
+from flask.ext.wtf.html5 import URLField
 from flask import url_for, redirect
-#from main import admin
 
    
 class PostView(ModelView):
@@ -65,7 +61,9 @@ class PostView(ModelView):
     
     def is_accessible(self):
         if current_user.is_authenticated():
-            return current_user.is_admin()
+            admin =Role.query.filter(Role.name=="Admin").first()
+            print admin
+            return current_user.has_role(admin)
         else:
             return False
         
@@ -93,7 +91,9 @@ class TagsView(ModelView):
     
     def is_accessible(self):
         if current_user.is_authenticated():
-            return current_user.is_admin()
+            admin =Role.query.filter(Role.name=="Admin").first()
+            print admin
+            return current_user.has_role(admin)
         else:
             return False
     column_exclude_list = ['count']
@@ -113,7 +113,9 @@ class CategoriesView(ModelView):
     
     def is_accessible(self):
         if current_user.is_authenticated():
-            return current_user.is_admin()
+            admin =Role.query.filter(Role.name=="Admin").first()
+            print admin
+            return current_user.has_role(admin)
         else:
             return False
 
@@ -133,7 +135,9 @@ class CommentsView(ModelView):
     
     def is_accessible(self):
         if current_user.is_authenticated():
-            return current_user.is_admin()
+            admin =Role.query.filter(Role.name=="Admin").first()
+            print admin
+            return current_user.has_role(admin)
         else:
             return False
     column_searchable_list = ('comment', Comments.comment)

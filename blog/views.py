@@ -1,23 +1,106 @@
-from main import db
+from main import db, redis_store
 from blog import blog
 from main.models import User, Post, Category, Comments, Tags, Votes
 from flask import request, g, redirect, url_for, \
      render_template, flash, jsonify
-from flask.ext.login import login_required, current_user
+#from flask.ext.login import login_required, current_user
 from main import app
 from blog.forms import CreatePostForm
 from datetime import datetime
 from elasticsearch import Elasticsearch
 import re
 from werkzeug.exceptions import abort
+from flask.ext.security import login_required, current_user
+from flask_security.decorators import roles_required
+import json
+import pprint
 
 @blog.route('/')
 @blog.route('/index', methods = ['GET'])
 @blog.route('/index/<int:page>', methods = ['GET'])
 def index(page = 1):
+    if current_user.is_authenticated():
+        print "token is: %s" % current_user.get_auth_token()
+    #redis_store.push('potato','Not Set')
+    #key="index%s" % page
+    #print key
+    #print redis_store.connection.exists(key)
+    #print key
+    #redis_store.set('potato', "12345353")
+    #print redis_store.get(key)
+    #if redis_store.get(key):
+        #posts = redis_store.get(key)
+    #     posts = redis_store.connection.get(key)
+    #     redis_store.connection.delete(key)
+    #     decoded_data = json.loads(posts)
+    #     pprint.pprint(posts)
+    #     print decoded_data['posts'] 
+    #    data2 =  jsonify(json_list = posts)
+    #    print data2
+    #    for data in data2:
+    #        print data
+    #    print "geting posts from redis"
+        #redis_store.
+    #else:
     posts = Post.query.filter(Post.status==1) \
                       .order_by(Post.created_at.desc()) \
                       .paginate(page, app.config['POSTS_PER_PAGE'], False)  # @UndefinedVariable
+    #    data = posts.items
+    #    post_list =[]
+    #    for post in data:
+    #        post2 = post.serialize2()
+    #        post_list.append(post2)
+    #    json_data = { 'posts': post_list } 
+    #    print json_data
+        #print               
+        #redis_store.set(key, posts) 
+        #print json['posts']
+        #decoded_data = json.loads(json)
+        #print decoded_data
+    #    redis_store.connection.set(key, json_data)
+        #redis_store.connection.set(key, data)
+        #print key             
+        #print "seting redis"    
+    
+    return render_template('index.html', posts=posts) 
+
+@blog.route('/index2', methods = ['GET'])
+@blog.route('/index2/<int:page>', methods = ['GET'])
+def index2(page = 1):
+    print "token is: %s" % current_user.get_auth_token()
+    #redis_store.push('potato','Not Set')
+    key="index%s" % page
+    print key
+    #print redis_store.connection.exists(key)
+    #print key
+    #redis_store.set('potato', "12345353")
+    #print redis_store.get(key)
+    if redis_store.connection.exists(key):
+        #posts = redis_store.get(key)
+         posts = redis_store.connection.get(key)
+    #     redis_store.connection.delete(key)
+    #     decoded_data = json.loads(posts)
+         pprint.pprint(posts)
+    #     print decoded_data['posts'] 
+    #    data2 =  jsonify(json_list = posts)
+    #    print data2
+    #    for data in data2:
+    #        print data
+    #    print "geting posts from redis"
+        #redis_store.
+    else:
+        posts = Post.query.filter(Post.status==1) \
+                      .order_by(Post.created_at.desc()) \
+                      .paginate(page, app.config['POSTS_PER_PAGE'], False)  # @UndefinedVariable
+        data = posts.items
+        post_list =[]
+        for post in data:
+            post2 = post.serialize2()
+            post_list.append(post2)
+        json_data = { 'posts': post_list } 
+        print json_data            
+        redis_store.connection.set(key, json_data)
+    
     return render_template('index.html', posts=posts)  
 
 
@@ -102,7 +185,7 @@ def post_details(id):
             return redirect(url_for('blog.post_details', id=post.id)) 
         else: 
             flash(u'You need to be logged in')   
-    if (post.status !=-1)and(current_user != post.users):
+    if (post.status !=1)and(current_user != post.users):
         abort(404)                  
     return render_template('post_details.html', post=post, comments=comments)
  

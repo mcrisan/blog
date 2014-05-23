@@ -3,7 +3,8 @@ from flask import request, g, redirect, url_for, \
      render_template, flash
 from main import db
 from main.models import User, Message
-from flask.ext.login import login_required, current_user
+#from flask.ext.login import login_required, current_user
+from flask.ext.security import login_required, current_user
 from main.email import follower_notification 
 from user.forms import SendMessage
 import pprint

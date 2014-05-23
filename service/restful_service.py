@@ -1,7 +1,8 @@
 from flask.ext.restful import Resource, reqparse, abort, fields, marshal, marshal_with
 from main.models import User, Post
 from main import db
-
+from flask_security.decorators import auth_token_required
+from flask.ext.security import login_required
 
 comment_fields = {
     'comment': fields.String,
@@ -27,9 +28,27 @@ user_fields = {
     'comments': fields.Nested(comment_fields)
 }
 
-#parser = reqparse.RequestParser()
-#parser.add_argument('username2', type=str)
-#parser.add_argument('email', type=str)
+class TokenAPI(Resource):
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        #self.reqparse.add_argument('email', type = str, location = 'json')
+        self.reqparse.add_argument('username', type = str)
+        self.reqparse.add_argument('password', type = str)
+        print "1"
+        super(TokenAPI, self).__init__()
+           
+    def post(self):  
+        #user = User.query.get(id)
+        args = self.reqparse.parse_args()
+        username = args['username']
+        password = args['password']
+        user = User.query.filter((User.username==username)&(User.password==password)).first()
+        print "username is: %s" % username
+        if user is None:
+            abort(404)
+        else:
+            return { "token" : user.get_auth_token() } 
+             
 
 class UsersListAPI(Resource):
               
@@ -47,18 +66,19 @@ class UserAPI(Resource):
         self.reqparse.add_argument('type', type = str)
         print "1"
         super(UserAPI, self).__init__()
-        
+           
     def get_user(self, id):  
         user = User.query.get(id)
         if user is None:
             abort(404)
         else:
-            return user      
-        
+            return user 
+             
+    @auth_token_required
     def get(self, id):
         user = self.get_user(id)
         return { 'user': marshal(user, user_fields) }
-
+    @auth_token_required
     def put(self, id):
         user = self.get_user(id)
         args = self.reqparse.parse_args()
@@ -68,6 +88,7 @@ class UserAPI(Resource):
         db.session.commit()
         return { 'user': marshal(user, user_fields) }
 
+    @auth_token_required
     def delete(self, id):
         user = self.get_user(id)
         db.session.delete(user)

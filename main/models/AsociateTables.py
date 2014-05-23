@@ -15,3 +15,7 @@ followers = db.Table('followers',
     db.Column('follower_id', db.Integer, db.ForeignKey('users.id')),
     db.Column('followed_id', db.Integer, db.ForeignKey('users.id'))
 )
+
+roles_users = db.Table('roles_users',
+        db.Column('user_id', db.Integer(), db.ForeignKey('users.id')),
+        db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
