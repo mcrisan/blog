@@ -21,73 +21,26 @@ import pprint
 def index(page = 1):
     if current_user.is_authenticated():
         print "token is: %s" % current_user.get_auth_token()
-    #redis_store.push('potato','Not Set')
-    #key="index%s" % page
-    #print key
-    #print redis_store.connection.exists(key)
-    #print key
-    #redis_store.set('potato', "12345353")
-    #print redis_store.get(key)
-    #if redis_store.get(key):
-        #posts = redis_store.get(key)
-    #     posts = redis_store.connection.get(key)
-    #     redis_store.connection.delete(key)
-    #     decoded_data = json.loads(posts)
-    #     pprint.pprint(posts)
-    #     print decoded_data['posts'] 
-    #    data2 =  jsonify(json_list = posts)
-    #    print data2
-    #    for data in data2:
-    #        print data
-    #    print "geting posts from redis"
-        #redis_store.
-    #else:
     posts = Post.query.filter(Post.status==1) \
                       .order_by(Post.created_at.desc()) \
                       .paginate(page, app.config['POSTS_PER_PAGE'], False)  # @UndefinedVariable
-    #    data = posts.items
-    #    post_list =[]
-    #    for post in data:
-    #        post2 = post.serialize2()
-    #        post_list.append(post2)
-    #    json_data = { 'posts': post_list } 
-    #    print json_data
-        #print               
-        #redis_store.set(key, posts) 
-        #print json['posts']
-        #decoded_data = json.loads(json)
-        #print decoded_data
-    #    redis_store.connection.set(key, json_data)
-        #redis_store.connection.set(key, data)
-        #print key             
-        #print "seting redis"    
+    
     
     return render_template('index.html', posts=posts) 
 
 @blog.route('/index2', methods = ['GET'])
 @blog.route('/index2/<int:page>', methods = ['GET'])
 def index2(page = 1):
-    print "token is: %s" % current_user.get_auth_token()
+    #print "token is: %s" % current_user.get_auth_token()
     #redis_store.push('potato','Not Set')
     key="index%s" % page
     print key
-    #print redis_store.connection.exists(key)
-    #print key
-    #redis_store.set('potato', "12345353")
-    #print redis_store.get(key)
     if redis_store.connection.exists(key):
-        #posts = redis_store.get(key)
-         posts = redis_store.connection.get(key)
-    #     redis_store.connection.delete(key)
-    #     decoded_data = json.loads(posts)
-         pprint.pprint(posts)
-    #     print decoded_data['posts'] 
-    #    data2 =  jsonify(json_list = posts)
-    #    print data2
-    #    for data in data2:
-    #        print data
-    #    print "geting posts from redis"
-        #redis_store.
+        print "redis saved data"
+        posts = redis_store.connection.get(key)
+        redis_store.connection.delete(key)
+        decoded_data = json.loads(posts)
+        pprint.pprint(decoded_data['posts'][0])
     else:
         posts = Post.query.filter(Post.status==1) \
                       .order_by(Post.created_at.desc()) \
@@ -98,8 +51,9 @@ def index2(page = 1):
             post2 = post.serialize2()
             post_list.append(post2)
         json_data = { 'posts': post_list } 
-        print json_data            
-        redis_store.connection.set(key, json_data)
+        #print json_data     
+        data2 = json.dumps(json_data)    
+        redis_store.connection.set(key, data2)
     
     return render_template('index.html', posts=posts)  
 

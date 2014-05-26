@@ -3,3 +3,4 @@ flask-admin
 Flask-RESTful
 flask-security
 flask-redis
+Flask-Script
