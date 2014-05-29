@@ -1,9 +1,10 @@
-from main import db
 from datetime import datetime
 
+from main import db
+
 class Message(db.Model):
+    """Creates the message model"""
     __tablename__ = 'message'
-    
     id = db.Column(db.Integer, primary_key=True)
     subject = db.Column(db.String(50))
     message = db.Column(db.String(200))

@@ -1,11 +1,16 @@
-from main import db
 from datetime import datetime
+
+from main import db
 from main.models.votes import Votes
 
 
 class Comments(db.Model):
-    __tablename__ = 'comments'
-    
+    """Creates the comments model
+   
+    Functions:
+    vote_status -- Returns the vote if existe and none otherwise
+    """
+    __tablename__ = 'comments'  
     id = db.Column(db.Integer, primary_key=True)
     comment = db.Column(db.String(50))  
     created_at = db.Column(db.DateTime(), default= datetime.now())  
@@ -28,6 +33,7 @@ class Comments(db.Model):
         return '%s' % self.comment 
         
     def vote_status(self, user_id, type):
+        """Returns the vote if existe and none otherwise"""
         vote = Votes.query.filter((Votes.comment_id==self.id)&(Votes.user_id==user_id)).first()
         if vote:
             if vote.type==type:

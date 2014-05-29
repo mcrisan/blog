@@ -47,39 +47,43 @@
 			</div><!-- .post-teaser -->
 		</div>	
 {% endblock content %}
+
 {% block comments %}
-{% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
-  <form action="{{ url_for('blog.post_details', id= post.id) }}" class="form-horizontal" method=post>
-    <legend>Leave A comment</legend>        
-    <!-- Textarea -->
-	<div class="form-group com_textarea">
-		<div class="col-xs-11">                     
-		    <textarea class="form-control" id="comment" name="comments" required></textarea>
-		</div>
-	</div>  
-    <div class="form-group">
-        <div class="col-xs-offset-7 col-xs-10">
-            <button type="submit" class="btn btn-primary">Leave Comment</button>
-        </div>
-    </div>
-  </form>
-  
-  <!-- List of Comments -->
-  <div id="comments" class="comments">
-  {%- for item in comments recursive %}
-    {{ com.comment(item) }}
-    {%- if item.childrenc -%}
-    	{% if loop.depth < 5 %}
-        <div class="children">{{ loop(item.childrenc) }}</div>
-        {% else %}
-        <div class="children">{{ com.comment_end(item) }}</div>
-        {% endif %}
-    {%- endif %}
-{%- endfor %}
-  
-  	
-  </div>
+{% if post.status == 1 %}
+	{% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+	  <form action="{{ url_for('blog.post_details', id= post.id) }}" class="form-horizontal" method=post>
+	    <legend>Leave A comment</legend>        
+	    <!-- Textarea -->
+		<div class="form-group com_textarea">
+			<div class="col-xs-11">                     
+			    <textarea class="form-control" id="comment" name="comments" required></textarea>
+			</div>
+		</div>  
+	    <div class="form-group">
+	        <div class="col-xs-offset-7 col-xs-10">
+	            <button type="submit" class="btn btn-primary">Leave Comment</button>
+	        </div>
+	    </div>
+	  </form>
+	  
+	  <!-- List of Comments -->
+	  <div id="comments" class="comments">
+	  {%- for item in comments recursive %}
+	    {{ com.comment(item) }}
+	    {%- if item.childrenc -%}
+	    	{% if loop.depth < 5 %}
+	        <div class="children">{{ loop(item.childrenc) }}</div>
+	        {% else %}
+	        <div class="children">{{ com.comment_end(item) }}</div>
+	        {% endif %}
+	    {%- endif %}
+	{%- endfor %}
+	  
+	  	
+	  </div>
+{% endif %}
 {% endblock comments %}
+
 
 {% block mysripts %}
         <script type="text/javascript" src="{{ url_for('static', filename='js/comments.js') }}"></script>

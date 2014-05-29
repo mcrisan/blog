@@ -5,7 +5,7 @@
 		<div class="col-xs-12" ><a href="{{ url_for('blog.post_details', id=comment.post_id) }}#com_{{ comment.id }}"><h5>{{ comment.comment|truncate(30)}}</h5></a></div>
 	</div>
 	<div class="row">
-		<div class="col-xs-8">Author: <a href="{{ url_for('blog.show_user', username=comment.username) }}">{{ comment.username }}</a></div>
+		<div class="col-xs-8">Author: <a href="{{ url_for('blog.show_user', username=comment.User.username) }}">{{ comment.User.username }}</a></div>
 		<div class="col-xs-4">{{comment.likes}} Likes</div>
 	</div>
 	{% else %}

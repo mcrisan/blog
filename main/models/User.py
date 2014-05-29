@@ -1,14 +1,32 @@
-from main import db
 from datetime import datetime
+
+from flask.ext.security import  UserMixin
+
 from main.models.Post import Post
 from main.models.AsociateTables import followers, roles_users
 from main.models.Comments import Comments
 from main.models.Message import Message
-from flask.ext.security import  UserMixin
-import md5
-from config import app_secret
+from main import db
+
 
 class User(db.Model, UserMixin):
+    """Creates the operations a user can make
+    
+    Functions:
+    is_active -- Returns true if the user is active
+    is_anonymous -- Returns false if the user is anonymous
+    is_authenticated -- Returns true if the user is loged in
+    is_admin -- Returns true if the user is admin
+    get_id -- Returns the id of the logged in user
+    posts_by_user -- Returns a list with posts made by a user
+    top_users -- Returns users with most posts
+    top_comments -- Return most liked comments
+    messages -- Returns messages exchange by users
+    user_stream -- Returns posts from the people the user follows
+    unfollow -- Unfollow a user and return the user object
+    is_following --Checks if a user is following another user
+    get_username_by_id -- Returns the username of the user
+    """
     __tablename__ = "users"   
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
@@ -32,7 +50,8 @@ class User(db.Model, UserMixin):
         backref = db.backref('followers', lazy = 'dynamic'), 
         lazy = 'dynamic')
     
-    def __init__(self, username=None, password=None, email=None, type=0, token=None, social=None, active=None, roles=[]):
+    def __init__(self, username=None, password=None, email=None, type=0, 
+                 token=None, social=None, active=None, roles=[]):
         self.username = username
         self.password = password
         self.email = email
@@ -42,60 +61,68 @@ class User(db.Model, UserMixin):
         self.active = active
         self.roles = roles
         
-#    def get_auth_token(self):       
-#        salted_password = self.password + app_secret
-#        return md5.new(salted_password).hexdigest()
-#        #data = [str(self.id), self.password]
-#        #return self.
-#
     def __unicode__(self):
         return '%s' % self.username
     
     def is_active(self):
+        """Returns true if the logged in user is active"""
         # Here you should write whatever the code is
         # that checks the database if your user is active
         return True
 
     def is_anonymous(self):
+        """Returns false if the user is not logged in"""
         return False
 
     def is_authenticated(self):
+        """Returns true if the user is logged in"""
         return True
     
     def is_admin(self):
+        """Returns true if the logged in user is an admin"""
         if self.type == 1:
             return True
         else:
             return False
     
     def get_id(self):
+        """Returns the id of the user"""
         return self.id
     
     def posts_by_user(self, status):
+        """Returns all posts made by user, depending on the status
+        
+        Keyword arguments:
+        status -- the status of the user
+        """
         return Post.query.join(User, (User.id == Post.user_id)) \
                          .filter(db.and_(User.id == self.id, Post.status==status)) \
                          .order_by(Post.created_at.desc())
     
     @staticmethod
     def top_users():
-        return db.session.query(User.username, User.id, db.func.count(Post.user_id).label('total')) \
+        """Returns top users based on the number of posts they've made"""               
+        return db.session.query(User, User.id, db.func.count(Post.user_id).label('total')) \
                          .outerjoin(Post, ( User.id == Post.user_id)) \
                          .group_by(User.id) \
                          .order_by('total DESC').limit(5)
     
-    @staticmethod
-    def top_comments():
+    #@staticmethod
+    def top_comments(self):
+        """Returns comments with most likes"""
         return db.session.query(Comments.id, 
                                 Comments.comment, 
                                 Comments.likes, 
-                                User.username.label('username'), 
-                                User.id.label('user_id'), 
+                                User,
+                                #User.username,#.label('username'), 
+                                User.id,#.label('user_id'), 
                                 Comments.post_id 
                                 ) \
                          .join(User, User.id==Comments.user_id) \
                          .order_by('likes DESC').limit(3)
     
     def messages(self):
+        """Returns messages exchanged by users"""
         m_sent_max_date= db.session \
                  .query(db.func.max(Message.date).label('last_date')) \
                  .filter(Message.from_user_id == self.id) \
@@ -126,12 +153,10 @@ class User(db.Model, UserMixin):
                 .join(User, User.id ==Message.from_user_id) \
                 .filter(db.and_(Message.date == m_received_max_date.c.last_date ))
         all_messages = m_sent.union(m_received).group_by('username').order_by('date DESC')
-        #query = db.session.query(m_sent.c.username).filter(db.and_(
-        #                                                 Message.id == m_sent.c.id
-        #                                                 ))
         return all_messages
     
     def user_stream(self, status):
+        """Returns posts from logged in user and the people he follows"""
         return Post.query.join(followers, (followers.c.followed_id == Post.user_id)) \
                          .filter(db.and_(followers.c.follower_id == self.id, Post.status==status)) \
                          .order_by(Post.created_at.desc())
@@ -144,20 +169,45 @@ class User(db.Model, UserMixin):
                          .order_by(Post.created_at.desc()) 
        
     def follow(self, user):
+        """"Returns the logged in user after adding the wanted user to his followers list
+        
+        Keyword arguments:
+        user -- the user to follow
+        """
         if not self.is_following(user):
             self.followed.append(user)
             return self
 
     def unfollow(self, user):
+        """"Returns the logged in user after removing the wanted user from his followers list
+        
+        Keyword arguments:
+        user -- the user to remove
+        """
         if self.is_following(user):
             self.followed.remove(user)
             return self
 
     def is_following(self, user):
+        """"Returns true if the current user is following the desired user
+        
+        Keyword arguments:
+        user -- the user to check if it is following
+        """
         return self.followed.filter(followers.c.followed_id == user.id).count() > 0
     
     def is_following_by_username(self, id):
+        """"Returns true if the current user is following the desired user
+        
+        Keyword arguments:
+        id -- the id of the user to check if it is following
+        """
         return self.followed.filter(followers.c.followed_id == id).count() > 0
     
     def get_username_by_id(self, id):
+        """"Returns the username of the desired user
+        
+        Keyword arguments:
+        id -- the id of the desired user
+        """
         return User.query.get(id).username

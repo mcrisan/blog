@@ -1,10 +1,11 @@
-from main import db
 from datetime import datetime
+
+from main import db
 
 
 class Votes(db.Model):
-    __tablename__ = 'votes'
-    
+    """Creates the votes model"""
+    __tablename__ = 'votes'   
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime(), default= datetime.now())  
     comment_id = db.Column(db.Integer, db.ForeignKey('comments.id'))

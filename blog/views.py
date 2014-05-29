@@ -1,38 +1,50 @@
-from main import db, redis_store
-from blog import blog
-from main.models import User, Post, Category, Comments, Tags, Votes
-from flask import request, g, redirect, url_for, \
-     render_template, flash, jsonify
-#from flask.ext.login import login_required, current_user
-from main import app
-from blog.forms import CreatePostForm
-from datetime import datetime
-from elasticsearch import Elasticsearch
 import re
-from werkzeug.exceptions import abort
-from flask.ext.security import login_required, current_user
-from flask_security.decorators import roles_required
 import json
 import pprint
+from datetime import datetime
+from elasticsearch import Elasticsearch
+from werkzeug.exceptions import abort
+
+from flask import request, g, redirect, url_for, \
+     render_template, flash, jsonify
+from flask.ext.security import login_required, current_user
+from flask_security.decorators import roles_required
+from main.celery.tasks import add
+     
+from main import db, redis_store
+from main.models import User, Post, Category, Comments, Tags, Votes
+from main import app
+from blog.forms import CreatePostForm
+from blog import blog
+
+
 
 @blog.route('/')
 @blog.route('/index', methods = ['GET'])
 @blog.route('/index/<int:page>', methods = ['GET'])
 def index(page = 1):
+    """Creates the index page
+    
+    Keyword arguments:
+    page -- the number of page
+    """
     if current_user.is_authenticated():
         print "token is: %s" % current_user.get_auth_token()
     posts = Post.query.filter(Post.status==1) \
                       .order_by(Post.created_at.desc()) \
-                      .paginate(page, app.config['POSTS_PER_PAGE'], False)  # @UndefinedVariable
-    
-    
+                      .paginate(page, app.config['POSTS_PER_PAGE'], False)  # @UndefinedVariable   
     return render_template('index.html', posts=posts) 
 
 @blog.route('/index2', methods = ['GET'])
 @blog.route('/index2/<int:page>', methods = ['GET'])
 def index2(page = 1):
+    result =add.delay(4, 4)
+    print result.get()
     #print "token is: %s" % current_user.get_auth_token()
     #redis_store.push('potato','Not Set')
+    user = User()
+    print "documentation"
+    print user.posts_by_user.__doc__
     key="index%s" % page
     print key
     if redis_store.connection.exists(key):
@@ -61,6 +73,12 @@ def index2(page = 1):
 @blog.route('/cat/<category>')
 @blog.route('/cat/<category>/<int:page>', methods = ['GET'])
 def posts_by_category(category, page = 1):
+    """Creates the category page
+    
+    Keyword arguments:
+    page -- the number of page
+    category -- the name of category
+    """
     post = Post()  
     posts = post.posts_category_status(category, 1).paginate(page, app.config['POSTS_PER_PAGE'], False)    
     return render_template('posts_categories.html', category=category, posts=posts) 
@@ -68,7 +86,13 @@ def posts_by_category(category, page = 1):
 
 @blog.route('/tag/<tag>')
 @blog.route('/tag/<tag>/<int:page>', methods = ['GET'])
-def posts_by_tag(tag, page = 1):   
+def posts_by_tag(tag, page = 1):  
+    """Creates the tag page
+    
+    Keyword arguments:
+    page -- the number of page
+    tag -- the name of tag
+    """ 
     post = Post()  
     posts = post.posts_tag_status(tag, 1).paginate(page, app.config['POSTS_PER_PAGE'], False)       
     return render_template('post_tag.html', tag=tag, posts=posts)  
@@ -77,26 +101,40 @@ def posts_by_tag(tag, page = 1):
 @blog.route('/user/<username>')
 @blog.route('/user/<username>/<int:page>', methods = ['GET'])
 def show_user(username, page=1):
+    """Creates the user's page.
+    Displays the posts created by himself and by the people who follow him.
+    If logged in user is different than corresponding user's page, it will only display
+    posts made by that user.
+    
+    Keyword arguments:
+    page -- the number of page
+    category -- the name of category
+    """
     user = User.query.filter_by(username=username).first_or_404()  # @UndefinedVariable
     user_posts = user.posts_by_user(1).paginate(page, app.config['POSTS_PER_PAGE'], False)
     pending_posts = user.posts_by_user(0).all()
     rejected_posts = user.posts_by_user(2).all()
     posts = user.user_stream(1).paginate(page, app.config['POSTS_PER_PAGE'], False) 
-    if current_user.username == username:
-        head = "Latest posts from you and people you follow "
-        return render_template('user_details.html', 
-                               user=user, posts=posts, 
-                               pending_posts=pending_posts, 
-                               rejected_posts=rejected_posts, 
-                               head=head)
-    else:
-        head = "Latest posts made by %s " % username
-        return render_template('user_details.html', user=user, posts=user_posts, head = head)
+    if current_user.is_authenticated():
+        if current_user.username == username:
+            head = "Latest posts from you and people you follow "
+            return render_template('user_details.html', 
+                                   user=user, posts=posts, 
+                                   pending_posts=pending_posts, 
+                                   rejected_posts=rejected_posts, 
+                                   head=head,
+                                   different_user = 0)
+    #else:
+    head = "Latest posts made by %s " % username
+    return render_template('user_details.html', user=user, posts=user_posts, head = head, different_user = 1)
  
     
 @blog.route('/create_post', methods=['GET', 'POST'])
 @login_required
 def create_post():
+    """Renders page to create a new post.
+    Saves the post in the database.
+    """
     form = CreatePostForm() 
     if form.validate_on_submit():
         categories = form.categories.data
@@ -112,6 +150,7 @@ def create_post():
                     current_user.id, cat, 
                     list_tags
                     )
+        post.status = 0
         db.session.add(post)  # @UndefinedVariable
         try:
             db.session.commit()  # @UndefinedVariable
@@ -126,6 +165,11 @@ def create_post():
     
 @blog.route('/post/<id>', methods=['GET', 'POST'])
 def post_details(id):
+    """Renders the post page
+    
+    Keyword arguments:
+    id -- id of the post to be shown
+    """
     post = Post.query.get_or_404(id)  # @UndefinedVariable
     comments =post.get_comments_by_post()
     if request.method=='POST':
@@ -146,6 +190,9 @@ def post_details(id):
  
 @blog.route('/create_comment', methods=['POST'])
 def create_comment():
+    """Renders the page to create a new comment.
+    Saves the comment in the database
+    """
     if current_user.is_authenticated():
         id_parent = request.form['id_parent']
         id_post = request.form['id_post']
@@ -162,6 +209,7 @@ def create_comment():
 
 @blog.route('/like_comment', methods=['GET','POST'])
 def like_comment():
+    """Creates the action to like a comment"""
     if current_user.is_authenticated():
         id_comment = request.form['id_comment']
         comment = Comments.query.get(id_comment);
@@ -192,6 +240,7 @@ def like_comment():
     
 @blog.route('/unlike_comment', methods=['GET','POST'])
 def unlike_comment():
+    """Creates the action to unlike a comment"""
     if current_user.is_authenticated():
         id_comment = request.form['id_comment']
         comment = Comments.query.get(id_comment);
@@ -222,6 +271,7 @@ def unlike_comment():
     
 @blog.route('/featured_posts', methods=['GET','POST'])
 def featured_posts():
+    """Renders top posts"""
     top_posts = Post.top_posts().all()
     data=[]
     for post in top_posts:
@@ -238,6 +288,12 @@ def featured_posts():
 @blog.route('/post/edit/<id>', methods=['GET', 'POST'])
 @login_required
 def edit_post(id):
+    """Renders the page to edit a post.
+    Updates post details in the database.
+    
+    Keyword arguments:
+    id -- id of the post to be edited
+    """
     post = Post.query.get_or_404(id)
     if not post.user_id == current_user.id:
         return redirect(url_for('blog.index')) 
@@ -260,7 +316,7 @@ def edit_post(id):
         post.categories = cat
         post.tags = list_tags
         post.updated_at = datetime.now()
-        post.status = 1
+        post.status = 0
         try:
             db.session.commit()
             post2 = post.serialize2()
@@ -275,6 +331,7 @@ def edit_post(id):
 
 @blog.route('/search', methods=['POST'])
 def search():
+    """Reads searched data"""
     if not g.search_form.validate_on_submit():
         return redirect(url_for('blog.index'))
     return redirect(url_for('blog.search_results', query = g.search_form.search.data))
@@ -282,6 +339,11 @@ def search():
 
 @blog.route('/search/<query>', methods=['GET', 'POST'])
 def search_results(query): 
+    """Renders the search results page
+    
+    Keyword arguments:
+    query -- the search term introduced by user
+    """
     pattern=re.compile("[^\w ']")
     new_query = pattern.sub('', query)
     es = Elasticsearch()
@@ -305,6 +367,7 @@ def search_results(query):
 
 @blog.route('/autocomplete', methods=['GET', 'POST'])
 def autocomplete():
+    """Creates an autocomplete search"""
     data = request.args.get('term');
     es = Elasticsearch()
     res = es.search(
@@ -330,6 +393,11 @@ def autocomplete():
 @blog.route('/post/delete/<id>', methods=['GET', 'POST'])
 @login_required
 def delete_post(id):
+    """Delete's a post by it's id.
+    
+    Keyword arguments:
+    id -- the post to be deleted
+    """
     post = Post.query.get_or_404(id)
     if not post.user_id == current_user.id:
         return redirect(url_for('blog.index')) 
@@ -346,6 +414,7 @@ def delete_post(id):
         
 
 def render_sidebar_template():
+    """Sends categories to main layout"""
     categories = Category.query.all()
     return render_template("sidebar.html", categories=categories)
  

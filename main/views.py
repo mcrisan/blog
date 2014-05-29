@@ -212,10 +212,11 @@ def check_for_admin(*args, **kw):
 def load_sidebar():
     #tag = Tags()
     #results = tag.load_tags()
+    user = User()
     results = Tags.query.all()
     top_users = User.top_users().all()
     top_posts = Post.top_posts().all()
-    top_comments = User.top_comments().all()
+    top_comments = user.top_comments().all()
     cat = Category.category_count().all()
     #posts_in_categ = 
     return dict(tags= results, users=top_users, posts2=top_posts, top_comments=top_comments, categ=cat)   

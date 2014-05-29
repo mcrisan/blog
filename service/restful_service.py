@@ -1,8 +1,8 @@
 from flask.ext.restful import Resource, reqparse, abort, fields, marshal, marshal_with
+from flask_security.decorators import auth_token_required
+
 from main.models import User, Post
 from main import db
-from flask_security.decorators import auth_token_required
-from flask.ext.security import login_required
 
 comment_fields = {
     'comment': fields.String,
@@ -42,7 +42,7 @@ class TokenAPI(Resource):
         args = self.reqparse.parse_args()
         username = args['username']
         password = args['password']
-        user = User.query.filter((User.username==username)&(User.password==password)).first()
+        user = User.query.filter((User.username==username)&(User.password==password)&(User.type==1)).first()
         print "username is: %s" % username
         if user is None:
             abort(404)

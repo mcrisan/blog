@@ -6,6 +6,9 @@ from main.models import User, Message
 #from flask.ext.login import login_required, current_user
 from flask.ext.security import login_required, current_user
 from main.email import follower_notification 
+
+from main.celery.tasks import send_email, add
+
 from user.forms import SendMessage
 import pprint
 from datetime import datetime
@@ -30,7 +33,15 @@ def follow_user(id):
     if user:
         db.session.commit()  
         #email()
-        follower_notification(follow_user, g.user)     
+        print current_user
+        follower = User.query.get(current_user.id)
+        print follower.username
+        #follower_notification(follow_user, g.user)
+        send_email.delay(follow_user.id, follower.id)
+        #send_email.delay(follow_user, g.user)
+        #result = add.delay(follow_user, 2)
+        #print result.get()
+        #follower_notification(follow_user, g.user)     
         flash(u'User has been added to your followers list')
     else:
         flash(u'You already follow'+ follow_user.username)    

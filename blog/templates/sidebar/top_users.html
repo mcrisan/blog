@@ -2,10 +2,10 @@
 <h2 class="cufon-h2"><span>Top Users</span></h2>
 	{% for user in users %}
 	<div class="row">
-		<div class="col-md-8"><a href="{{ url_for('blog.show_user', username=user.username) }}">{{ user.username}}</a></div>
+		<div class="col-md-8"><a href="{{ url_for('blog.show_user', username=user.User.username) }}">{{ user.User.username}}</a></div>
 		<div class="col-md-2">{{ user.total}}</div>
 		<div class="col-md-2">
-			{% if (g.user.is_authenticated()) and (g.user.username != user.username) %}
+			{% if (g.user.is_authenticated()) and (g.user.username != user.User.username) %}
 							{% if g.user.is_following_by_username(user.id) %}
 							<em><a href="{{ url_for('users.unfollow_user', id=user.id) }}">Unfollow</a></em><br />				
 							{% else %}

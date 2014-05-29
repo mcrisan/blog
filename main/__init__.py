@@ -10,7 +10,7 @@ from flask.ext.mail import Mail
 from flask.ext.admin import Admin
 from flask.ext.restful import Api, Resource
 from flask_redis import Redis
-
+#from celery import Celery
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 mainapp = Blueprint('main', __name__, template_folder='templates')
@@ -24,6 +24,7 @@ mail = Mail(app)
 redis_store = Redis(app)
 from main.models import User
 from main.models import Role
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)

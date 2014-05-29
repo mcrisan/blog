@@ -18,8 +18,10 @@ class LoginForm(Form):
         rv = Form.validate(self)
         if not rv:
             return False
+        print "username-ul este:"
         print self.username.data
         user = User.query.filter_by(username=self.username.data).first()
+        print user
         if user is None:
             self.username.errors.append('Unknown username')
             return False

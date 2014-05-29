@@ -6,7 +6,7 @@ app_secret  = 'd3d5157044ba795094f0742af2dce8ca'
 SQLALCHEMY_DATABASE_URI = 'mysql://root@localhost/flask'
 
 # pagination
-POSTS_PER_PAGE = 10
+POSTS_PER_PAGE = 5
 
 # email server
 MAIL_SERVER = 'smtp.googlemail.com'

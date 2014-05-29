@@ -47,9 +47,14 @@
 	
 	<div class="clear"></div>	
 {% endif %}	
-	{{ lists.build_list("Pending Posts", pending_posts) }}
-	
-	{{ lists.build_list("Rejected Posts", rejected_posts) }}
+ {% if different_user == 0 %}
+ 	{% if pending_posts %}
+		{{ lists.build_list("Pending Posts", pending_posts) }}
+	{% endif %}
+	{% if rejected_posts %}
+		{{ lists.build_list("Rejected Posts", rejected_posts) }}
+	{% endif %}
+ {% endif %}	
 	
 	{{ lists.build_list(head, posts.items) }}
 	

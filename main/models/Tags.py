@@ -1,8 +1,13 @@
 from main import db
 
 class Tags(db.Model):
-    __tablename__ = 'tags'
+    """Creates the blog tags model
     
+    Functions:
+    list_of_tags -- Returns a list of tags.
+    str_tags -- Returns all tag names as a string.
+    """
+    __tablename__ = 'tags' 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50)) 
     count = db.Column(db.Integer) 
@@ -15,6 +20,11 @@ class Tags(db.Model):
         return '%s' % self.name    
      
     def list_of_tags(self, tags):
+        """Returns a list of tags
+        
+        Keyword arguments:
+        tags -- string containing tags splited by comma
+        """
         tag_names = tags.split(",") 
         tag_list =[]
         for tag in tag_names:
@@ -24,10 +34,14 @@ class Tags(db.Model):
             else:
                 db_tag = Tags(tag.lstrip(), 1)    
             tag_list.append(db_tag)
-        return tag_list   
-    
+        return tag_list      
         
     def str_tags(self, tag_list):
+        """Returns a string with tags splited by comma
+        
+        Keyword arguments:
+        tag_list -- list of tags to be transformed
+        """
         str_list = []
         for tag in tag_list:
             str_list.append(tag.name) 
