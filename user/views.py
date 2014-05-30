@@ -2,7 +2,7 @@ from user import users
 from flask import request, g, redirect, url_for, \
      render_template, flash
 from main import db
-from main.models import User, Message
+from main.models import User, Message, UserManager
 #from flask.ext.login import login_required, current_user
 from flask.ext.security import login_required, current_user
 from main.email import follower_notification 
@@ -104,7 +104,8 @@ def send_conv_response(conv=0):
 @users.route('/user/view_messages/<int:page>', methods = ['GET', 'POST'])
 @login_required
 def view_messages(page = 1):
-    messages = current_user.messages().all()#.paginate(page, app.config['POSTS_PER_PAGE'], False)
+    user_m = UserManager(current_user.id)
+    messages = user_m.messages().all()#.paginate(page, app.config['POSTS_PER_PAGE'], False)
     #return "111"
     return render_template('user/view_messages.html', messages=messages)
 

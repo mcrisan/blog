@@ -19,20 +19,6 @@ class Category(db.Model):
     def __repr__(self):
         return ' %s' % self.name    
         
-    def list_of_categories(self, categories):
-        """Returns list of categories from a list of names
-        
-        Keyword arguments:
-        categories -- list of category names
-        """
-        cat =[]
-        for category in categories:
-            categ = Category.query.get(category)
-            cat.append(categ)
-        if not categories:
-            categ =  Category.query.get(3) 
-            cat.append(categ)  
-        return cat 
     
     @staticmethod
     def category_count():

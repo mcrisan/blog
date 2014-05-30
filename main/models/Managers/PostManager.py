@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from main.models.Comments import Comments
 from main.models.Post import Post
 from main.models.Category import Category
@@ -76,36 +74,8 @@ class PostManager():
             data = {"post_details" : post_data
                 }    
         return data
-            
-    def dump_datetime(self, value):
-        """Deserialize datetime object into string form for JSON processing."""
-        if value is None:
-            return None
-        return [value.strftime("%Y-%m-%d"), value.strftime("%H:%M:%S")]    
-        
-    def serialize(self):
-        """Return object data in easily serializeable format"""
-        return {
-           'id'         : self.id,
-           'title'      : self.title,
-           'excerpt'    : self.excerpt,
-           'description': self.description,
-           'image'      : self.image,
-           'created_at' : self.dump_datetime(self.created_at),
-           'updated_at' : self.dump_datetime(self.updated_at)
-           }  
-        
-    def serialize2(self):
-        """Return object data in easily serializeable format"""
-        return {
-           'id'         : self.id,
-           'title'      : self.title,
-           'excerpt'    : self.excerpt,
-           'description': self.description
-           }       
-    
-    @staticmethod
-    def top_posts():
+                  
+    def top_posts(self):
         """Return list of top posts baesd on the number of comments"""
         return db.session.query(Post.id, Post.title, Post.image, db.func.count(Comments.post_id).label('total')) \
                          .outerjoin(Comments, ( Post.id == Comments.post_id)) \

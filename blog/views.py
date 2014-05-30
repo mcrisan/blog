@@ -12,7 +12,8 @@ from flask_security.decorators import roles_required
 from main.celery.tasks import add
      
 from main import db, redis_store
-from main.models import User, Post, Category, Comments, Tags, Votes, UserManager, PostManager
+from main.models import User, Post, Category, Comments, Tags, Votes, UserManager, PostManager, \
+                        TagsManager, CommentsManager, CategoryManager
 from main import app, mc
 from blog.forms import CreatePostForm
 from blog import blog
@@ -93,9 +94,8 @@ def posts_by_category(category, page = 1):
     page -- the number of page
     category -- the name of category
     """
-    post = Post()  
-    posts = post.posts_category_status(category, 1).paginate(page, app.config['POSTS_PER_PAGE'], False) 
-    post_m = PostManager()   
+    post_m = PostManager()  
+    posts = post_m.posts_category_status(category, 1).paginate(page, app.config['POSTS_PER_PAGE'], False)    
     posts_data  = post_m.get_post_data(posts, True)    
     return render_template('posts_categories.html', category=category, posts=posts_data) 
 
@@ -109,9 +109,8 @@ def posts_by_tag(tag, page = 1):
     page -- the number of page
     tag -- the name of tag
     """ 
-    post = Post()  
-    posts = post.posts_tag_status(tag, 1).paginate(page, app.config['POSTS_PER_PAGE'], False) 
     post_m = PostManager()   
+    posts = post_m.posts_tag_status(tag, 1).paginate(page, app.config['POSTS_PER_PAGE'], False) 
     posts_data  = post_m.get_post_data(posts, True)   
     return render_template('post_tag.html', tag=tag, posts=posts_data)  
 
@@ -178,10 +177,10 @@ def create_post():
     if form.validate_on_submit():
         categories = form.categories.data
         tags = form.tag.data
-        categ = Category()
-        cat = categ.list_of_categories(categories)
-        tag = Tags()
-        list_tags = tag.list_of_tags(tags)
+        categ_m = CategoryManager()
+        cat = categ_m.list_of_categories(categories)
+        tag_m = TagsManager()
+        list_tags = tag_m.list_of_tags(tags)
         post = Post(form.title.data, 
                     form.excerpt.data, 
                     form.description.data, 
@@ -210,7 +209,8 @@ def post_details(id):
     id -- id of the post to be shown
     """
     post = Post.query.get_or_404(id)  # @UndefinedVariable
-    comments =post.get_comments_by_post()
+    post_m = PostManager(post.id)
+    comments =post_m.get_comments_by_post()
     if request.method=='POST':
         if current_user.is_authenticated():
             comment= Comments(request.form['comments'], current_user.id, post.id)
@@ -252,7 +252,8 @@ def like_comment():
     if current_user.is_authenticated():
         id_comment = request.form['id_comment']
         comment = Comments.query.get(id_comment);
-        vote_status = comment.vote_status(current_user.id, "like");
+        comment_m = CommentsManager(comment.id)
+        vote_status = comment_m.vote_status(current_user.id, "like");
         if vote_status is None:
             new_vote = Votes(comment.id, current_user.id, "like")
             db.session.add(new_vote)
@@ -283,7 +284,8 @@ def unlike_comment():
     if current_user.is_authenticated():
         id_comment = request.form['id_comment']
         comment = Comments.query.get(id_comment);
-        vote_status = comment.vote_status(current_user.id, "unlike");
+        comment_m = CommentsManager(comment.id)
+        vote_status = comment_m.vote_status(current_user.id, "unlike");
         if vote_status is None:
             new_vote = Votes(comment.id, current_user.id, "unlike")
             db.session.add(new_vote)
@@ -336,18 +338,19 @@ def edit_post(id):
     post = Post.query.get_or_404(id)
     if not post.user_id == current_user.id:
         return redirect(url_for('blog.index')) 
-    tag = Tags()
-    categ = Category()
-    tag_names = tag.str_tags(post.tags)
+    tag_m = TagsManager()
+    categ_m = CategoryManager()
+    post_m = PostManager()
+    tag_names = tag_m.str_tags(post.tags)
     categories = post.categories
-    all_cat = post.check_category(categories)
+    all_cat = post_m.check_category(categories)
     form = CreatePostForm()
     if form.validate_on_submit():
         post = Post.query.get(id)
         categories = form.categories.data
         tags = form.tag.data       
-        cat = categ.list_of_categories(categories)
-        list_tags = tag.list_of_tags(tags)
+        cat = categ_m.list_of_categories(categories)
+        list_tags = tag_m.list_of_tags(tags)
         post.title = form.title.data
         post.excerpt = form.excerpt.data
         post.description = form.description.data

@@ -3,6 +3,7 @@ from main.models.User import User
 from main import db
 from main.models.AsociateTables import followers
 from main.models.Comments import Comments
+from main.models.Message import Message
 
 class UserManager(): 
     id=None
@@ -38,4 +39,51 @@ class UserManager():
                          .join(followers, (followers.c.followed_id == Post.user_id)) \
                          .join(Comments, (Comments.post_id == Post.id)) \
                          .filter(followers.c.follower_id == self.id) \
-                         .order_by(Post.created_at.desc())     
+                         .order_by(Post.created_at.desc())   
+                         
+    def top_comments(self):
+        """Returns comments with most likes"""
+        return db.session.query(Comments.id, 
+                                Comments.comment, 
+                                Comments.likes, 
+                                User,
+                                #User.username,#.label('username'), 
+                                User.id,#.label('user_id'), 
+                                Comments.post_id 
+                                ) \
+                         .join(User, User.id==Comments.user_id) \
+                         .order_by('likes DESC').limit(3)
+    
+    def messages(self):
+        """Returns messages exchanged by users"""
+        m_sent_max_date= db.session \
+                 .query(db.func.max(Message.date).label('last_date')) \
+                 .filter(Message.from_user_id == self.id) \
+                 .group_by(Message.to_user_id) \
+                 .subquery('t')
+        m_sent = db.session \
+                 .query(Message.id, 
+                        Message.subject, 
+                        Message.from_user_id, 
+                        Message.to_user_id, 
+                        User.username.label('username'), 
+                        Message.date.label("date")) \
+                 .join(User, User.id ==Message.to_user_id) \
+                 .filter(db.and_(Message.date == m_sent_max_date.c.last_date))
+        
+        m_received_max_date= db.session \
+                 .query(db.func.max(Message.date).label('last_date')) \
+                 .filter(Message.to_user_id == self.id) \
+                 .group_by(Message.from_user_id) \
+                 .subquery('t') 
+        m_received = db.session \
+                .query(Message.id, 
+                       Message.subject, 
+                       Message.from_user_id, 
+                       Message.to_user_id, 
+                       User.username.label('username'), 
+                       Message.date.label("date")) \
+                .join(User, User.id ==Message.from_user_id) \
+                .filter(db.and_(Message.date == m_received_max_date.c.last_date ))
+        all_messages = m_sent.union(m_received).group_by('username').order_by('date DESC')
+        return all_messages                        

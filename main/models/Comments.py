@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from main import db
-from main.models.votes import Votes
 
 
 class Comments(db.Model):
@@ -31,14 +30,3 @@ class Comments(db.Model):
         
     def __repr__(self):
         return '%s' % self.comment 
-        
-    def vote_status(self, user_id, type):
-        """Returns the vote if existe and none otherwise"""
-        vote = Votes.query.filter((Votes.comment_id==self.id)&(Votes.user_id==user_id)).first()
-        if vote:
-            if vote.type==type:
-                return True
-            else:
-                return vote
-        else:
-            return None
