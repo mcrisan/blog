@@ -17,7 +17,6 @@ from main.models import User, Post, Category, Comments, Tags, Votes, UserManager
 from main import app, mc
 from blog.forms import CreatePostForm
 from blog import blog
-from main.paginateModel import PaginateObject
 
 
 
@@ -34,7 +33,6 @@ def index(page = 1):
     cached_page = mc.get("page")
     if not cached_page:
         cached_page = 0
-    print  cached_page
     if page > cached_page:
         mc.set("page", page, 3600)
     posts = mc.get(key)
@@ -55,11 +53,6 @@ def index(page = 1):
 def index2(page = 1):
     result =add.delay(4, 4)
     print result.get()
-    #print "token is: %s" % current_user.get_auth_token()
-    #redis_store.push('potato','Not Set')
-    user = User()
-    print "documentation"
-    #print user.posts_by_user.__doc__
     key="index%s" % page
     print key
     if redis_store.connection.exists(key):
@@ -78,10 +71,8 @@ def index2(page = 1):
             post2 = post.serialize2()
             post_list.append(post2)
         json_data = { 'posts': post_list } 
-        #print json_data     
         data2 = json.dumps(json_data)    
-        redis_store.connection.set(key, data2)
-    
+        redis_store.connection.set(key, data2)  
     return render_template('index.html', posts=posts)  
 
 

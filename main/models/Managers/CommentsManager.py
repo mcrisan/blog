@@ -7,7 +7,7 @@ class CommentsManager():
         self.id = id
         
     def vote_status(self, user_id, type):
-        """Returns the vote if existe and none otherwise"""
+        """Returns the vote if exists and none otherwise"""
         vote = Votes.query.filter((Votes.comment_id==self.id)&(Votes.user_id==user_id)).first()
         if vote:
             if vote.type==type:

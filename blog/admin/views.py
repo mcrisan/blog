@@ -2,15 +2,16 @@ from flask.ext.admin import expose
 from flask.ext.login import current_user
 from flask.ext.admin.contrib.sqla import ModelView
 from wtforms.fields import SelectField
-from main.models import Post, Tags, Category, User, Comments, Role
-from main import db
 from flask_security.forms import Required
 from flask.ext.wtf.html5 import URLField
 from flask import url_for, redirect
 
+from main.models import Post, Tags, Category, User, Comments, Role
+from main import db
+
+
    
-class PostView(ModelView):
-    #form = CreatePostForm       
+class PostView(ModelView):       
     list_template = 'admin/post_list.html'
     inline_models = (Comments,)
     column_sortable_list = (('title', Post.title), ('excerpt', Post.excerpt), ('description', Post.description), ('created_at', Post.created_at))
@@ -31,7 +32,6 @@ class PostView(ModelView):
     form_columns = ('users', 'title', 'excerpt', 'description', 'image', 'categories', 'tags', 'comments', 'status')
     form_overrides = dict(status=SelectField, image=URLField)
     form_args = dict(
-        # Pass the choices to the `SelectField`
         status=dict(coerce=int,
             choices=[(0, 'Pending'), (1, 'Approved'), (1, 'Rejected')]
         ),
@@ -99,12 +99,10 @@ class TagsView(ModelView):
     column_exclude_list = ['count']
     column_labels = dict(name='Tag Name')
     form_excluded_columns = ['tposts', 'count']
-    form_args = dict(
-        # Pass the choices to the `SelectField`   
+    form_args = dict(   
         name=dict( validators=[Required()]
         ),
                   )
-    #column = ('name')
 
     def __init__(self, session, **kwargs):
         super(TagsView, self).__init__(Tags, session, **kwargs) 
@@ -121,12 +119,10 @@ class CategoriesView(ModelView):
 
     column_labels = dict(name='Category Name')
     form_excluded_columns = ['posts', ]
-    form_args = dict(
-        # Pass the choices to the `SelectField`   
+    form_args = dict(   
         name=dict( validators=[Required()]
         ),
                   )
-    #column = ('name')
 
     def __init__(self, session, **kwargs):
         super(CategoriesView, self).__init__(Category, session, **kwargs)  
@@ -136,7 +132,6 @@ class CommentsView(ModelView):
     def is_accessible(self):
         if current_user.is_authenticated():
             admin =Role.query.filter(Role.name=="Admin").first()
-            print admin
             return current_user.has_role(admin)
         else:
             return False
@@ -145,8 +140,7 @@ class CommentsView(ModelView):
     column_list = ('comment', 'created_at', 'likes', 'unlikes', 'ucomments', 'pcomments', 'children')
     form_excluded_columns = ['likes', 'unlikes']
     form_columns = ('comment', 'created_at', 'ucomments', 'pcomments')
-    form_args = dict(
-        # Pass the choices to the `SelectField`   
+    form_args = dict(   
         comment=dict( validators=[Required()]
         ),
         ucomments=dict( validators=[Required()]
@@ -154,7 +148,6 @@ class CommentsView(ModelView):
         pcomments=dict( validators=[Required()]
         )
                   )
-    #column = ('name')
     form_ajax_refs = {
         'pcomments': {
             'fields': (Post.title,)

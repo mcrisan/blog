@@ -1,4 +1,3 @@
-from main.models.AsociateTables import post_cat
 from main import db
 
 class Category(db.Model):
@@ -19,10 +18,4 @@ class Category(db.Model):
     def __repr__(self):
         return ' %s' % self.name    
         
-    
-    @staticmethod
-    def category_count():
-        """Returns the number of posts for each category"""
-        return db.session.query(Category.name, db.func.count(post_cat.c.category_id) \
-                                .label("count")).join(post_cat, post_cat.c.category_id==Category.id) \
-                                .group_by(Category.id)
+

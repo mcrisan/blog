@@ -1,22 +1,21 @@
-
-from main import mainapp, login_manager
-from main import user_datastore, security
-from main import app
-from models import User, Category, Tags, Comments, Post, Role, UserManager, PostManager, CategoryManager
-from blog.forms import LoginForm, RegisterForm, SearchForm
-from flask import Flask, request, session, g, redirect, url_for, abort, \
-     render_template, flash
-from main import db
-#from flask.ext.login import LoginManager, login_required, login_user, logout_user, current_user
-from flask.ext.security import login_required, login_user, logout_user, current_user
-import pprint
-import facebook
-from config import app_id, app_secret, consumer_key, consumer_secret, request_token_url, access_token_url, authenticate_url, callback_uri
 import oauth2 as oauth
 import cgi
-import twitter
-import webbrowser
 import urllib
+import pprint
+import facebook
+
+from flask import request, session, g, redirect, url_for, \
+     render_template, flash
+from flask.ext.security import login_required, login_user, logout_user, current_user
+    
+from main import mainapp, login_manager
+from main import user_datastore, security
+from main import app, db
+from models import User, Category, Tags, Role, UserManager, PostManager, CategoryManager
+from blog.forms import LoginForm, RegisterForm, SearchForm
+from config import app_id, app_secret, consumer_key, consumer_secret, request_token_url, \
+                   access_token_url, authenticate_url, callback_uri
+
 
 @mainapp.route('/user_login', methods=['GET', 'POST'])
 def user_login():
@@ -31,7 +30,6 @@ def user_login():
                 return redirect(next)
             else:
                 return redirect(url_for('blog.index'))
-            #return (redirect(next)  or url_for('blog.index'))
         return render_template('login.html', form=form)
 
 @security.login_context_processor
@@ -75,15 +73,13 @@ def facebook_login():
         password = "wewesdfe"
         email = profile['email']
         token = user["access_token"]
-        social = "facebook"
-        
+        social = "facebook"       
         user = User.query.filter_by(username=username).first()
         if not user:
             role = Role.query.filter(Role.name=="User").first()
-            user = user_datastore.create_user(username=username, email=email, password=password, token=token, social=social)
-            user_datastore.add_role_to_user(user, role)
-            #user = User(username, password, email, token, social)
-            #db.session.add(user)           
+            user = user_datastore.create_user(username=username, email=email, password=password, 
+                                              token=token, social=social)
+            user_datastore.add_role_to_user(user, role)          
         else:
             user.token = token 
         db.session.commit()          
@@ -93,22 +89,13 @@ def facebook_login():
 
 @mainapp.route('/twitter_login', methods=['GET', 'POST'])
 def twitter_login():
-    #api = twitter.Api(consumer_key=consumer_key,
-    #                  consumer_secret=consumer_secret,
-    #                  access_token_key='917529883-YRxS1ByvKrMHnr9vMN7oGNTNLqo5hDeABaqg821V',
-    #                  access_token_secret='j3ImOxL91rKlAi16xFjSr87YseB00MsQqzFlydp4sMZIx')
-    #print api.VerifyCredentials()
     consumer = oauth.Consumer(key=consumer_key, secret=consumer_secret)
     client = oauth.Client(consumer)
     body = urllib.urlencode(dict(oauth_callback=callback_uri))   
     resp, content = client.request(request_token_url, "POST", body=body)
-
     if resp['status'] != '200':
         raise Exception("Invalid response from Twitter.")
-
     session['request_token'] = dict(cgi.parse_qsl(content))
-    print "session is"
-    print session['request_token']
     url = "%s?oauth_token=%s" % (authenticate_url,
         session['request_token']['oauth_token'])
     return redirect(url) 
@@ -117,14 +104,10 @@ def twitter_login():
 @mainapp.route('/twitter_authenticated', methods=['GET', 'POST'])
 def twitter_authenticated():
     pincode = request.args.get('oauth_verifier')
-    print "12232"
-    print pincode
     consumer = oauth.Consumer(key=consumer_key, secret=consumer_secret)
     token = oauth.Token(session['request_token']['oauth_token'],
                         session['request_token']['oauth_token_secret'])
     client = oauth.Client(consumer, token)
-
-    # Step 2. Request the authorized access token from Twitter.
     body = urllib.urlencode({'oauth_callback': callback_uri, 'oauth_verifier': pincode })
     resp, content = client.request(access_token_url, "POST", body=body)
     if resp['status'] != '200':
@@ -146,11 +129,9 @@ def twitter_authenticated():
         role = Role.query.filter(Role.name=="User").first()
         user = user_datastore.create_user(username=access_token['screen_name'], email="email", password="234")
         user_datastore.add_role_to_user(user, role)
-        #user = User(access_token['screen_name'], "234", "email", type=0)
         user.oauth_token = access_token['oauth_token']
         user.oauth_secret = access_token['oauth_token_secret']
         user.social = "twitter"
-        #db.session.add(user)
         db.session.commit()
     login_user(user)
     return redirect(url_for('blog.index'))  
@@ -162,7 +143,8 @@ def register():
         return render_template('register.html', form=form)
     if form.validate_on_submit():
         role = Role.query.filter(Role.name=="User").first()
-        user = user_datastore.create_user(username=form.user.username, email=form.user.email, password=form.user.password)
+        user = user_datastore.create_user(username=form.user.username, email=form.user.email, 
+                                          password=form.user.password)
         user_datastore.add_role_to_user(user, role)
         try:
             db.session.commit()
@@ -179,9 +161,7 @@ def top_users():
     top_users = user_m.top_users()
     top_posts = post_m.top_posts()
     top_comments = User.top_comments()
-    #pprint.pprint(top_comments.all())
     Category.posts_without_cat()
-    #return top_users.all()
     return render_template('top_users.html', users=top_users)
 
 @mainapp.route("/logout")
@@ -194,7 +174,7 @@ def logout():
 @login_manager.user_loader
 def load_user(userid):
     u = User.query.get(userid)
-    return u #User(u.name,u.id,u.email)
+    return u 
 
 @app.before_request
 def before_request():
@@ -220,7 +200,6 @@ def load_sidebar():
     top_posts = post_m.top_posts().all()
     top_comments = user_m.top_comments().all()
     cat = cat_m.category_count().all()
-    #posts_in_categ = 
     return dict(tags= results, users=top_users, posts2=top_posts, top_comments=top_comments, categ=cat)   
 
 @app.errorhandler(404)

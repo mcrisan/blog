@@ -1,10 +1,11 @@
+from main import db, mc
+
 from main.models.Comments import Comments
 from main.models.Post import Post
 from main.models.Category import Category
 from main.models.Tags import Tags
 from main.models.AsociateTables import post_tag, post_cat
 from main.models.User import User
-from main import db, mc
 
 class PostManager():
     

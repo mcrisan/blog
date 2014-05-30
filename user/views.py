@@ -1,17 +1,16 @@
-from user import users
-from flask import request, g, redirect, url_for, \
-     render_template, flash
-from main import db
-from main.models import User, Message, UserManager
-#from flask.ext.login import login_required, current_user
-from flask.ext.security import login_required, current_user
-from main.email import follower_notification 
-
-from main.celery.tasks import send_email, add
-
-from user.forms import SendMessage
 import pprint
 from datetime import datetime
+
+from flask import request, g, redirect, url_for, \
+     render_template, flash
+from flask.ext.security import login_required, current_user
+     
+from main import db
+from main.models import User, Message, UserManager
+from main.celery.tasks import send_email
+from user.forms import SendMessage
+from user import users
+
 
 @users.route('/test')
 @login_required
@@ -32,16 +31,8 @@ def follow_user(id):
     user = current_user.follow(follow_user)
     if user:
         db.session.commit()  
-        #email()
-        print current_user
         follower = User.query.get(current_user.id)
-        print follower.username
-        #follower_notification(follow_user, g.user)
-        send_email.delay(follow_user.id, follower.id)
-        #send_email.delay(follow_user, g.user)
-        #result = add.delay(follow_user, 2)
-        #print result.get()
-        #follower_notification(follow_user, g.user)     
+        send_email.delay(follow_user.id, follower.id)    
         flash(u'User has been added to your followers list')
     else:
         flash(u'You already follow'+ follow_user.username)    

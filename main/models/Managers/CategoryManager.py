@@ -1,5 +1,4 @@
 from main import db
-
 from main.models.AsociateTables import post_cat
 from main.models.Category import Category
 from main.models.Post import Post

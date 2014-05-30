@@ -1,6 +1,6 @@
+from main import db
 from main.models.Post import Post
 from main.models.User import User
-from main import db
 from main.models.AsociateTables import followers
 from main.models.Comments import Comments
 from main.models.Message import Message
