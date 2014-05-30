@@ -2,7 +2,7 @@ from datetime import datetime
 
 from flask.ext.security import  UserMixin
 
-from main.models.Post import Post
+
 from main.models.AsociateTables import followers, roles_users
 from main.models.Comments import Comments
 from main.models.Message import Message
@@ -40,8 +40,8 @@ class User(db.Model, UserMixin):
     social = db.Column(db.String(50))
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
-    posts = db.relationship("Post", backref="users")
-    comments = db.relationship("Comments", backref="ucomments")
+    posts = db.relationship("Post", backref="users", lazy='joined')
+    comments = db.relationship("Comments", backref="ucomments", lazy='joined')
     type = db.Column(db.Integer)
     followed = db.relationship('User', 
         secondary = followers, 
@@ -89,23 +89,6 @@ class User(db.Model, UserMixin):
         """Returns the id of the user"""
         return self.id
     
-    def posts_by_user(self, status):
-        """Returns all posts made by user, depending on the status
-        
-        Keyword arguments:
-        status -- the status of the user
-        """
-        return Post.query.join(User, (User.id == Post.user_id)) \
-                         .filter(db.and_(User.id == self.id, Post.status==status)) \
-                         .order_by(Post.created_at.desc())
-    
-    @staticmethod
-    def top_users():
-        """Returns top users based on the number of posts they've made"""               
-        return db.session.query(User, User.id, db.func.count(Post.user_id).label('total')) \
-                         .outerjoin(Post, ( User.id == Post.user_id)) \
-                         .group_by(User.id) \
-                         .order_by('total DESC').limit(5)
     
     #@staticmethod
     def top_comments(self):
@@ -154,19 +137,6 @@ class User(db.Model, UserMixin):
                 .filter(db.and_(Message.date == m_received_max_date.c.last_date ))
         all_messages = m_sent.union(m_received).group_by('username').order_by('date DESC')
         return all_messages
-    
-    def user_stream(self, status):
-        """Returns posts from logged in user and the people he follows"""
-        return Post.query.join(followers, (followers.c.followed_id == Post.user_id)) \
-                         .filter(db.and_(followers.c.follower_id == self.id, Post.status==status)) \
-                         .order_by(Post.created_at.desc())
-     
-    def user_stream2(self):
-        return db.session.query( Post.title, Comments.comment ) \
-                         .join(followers, (followers.c.followed_id == Post.user_id)) \
-                         .join(Comments, (Comments.post_id == Post.id)) \
-                         .filter(followers.c.follower_id == self.id) \
-                         .order_by(Post.created_at.desc()) 
        
     def follow(self, user):
         """"Returns the logged in user after adding the wanted user to his followers list
@@ -211,3 +181,4 @@ class User(db.Model, UserMixin):
         id -- the id of the desired user
         """
         return User.query.get(id).username
+                   

@@ -10,6 +10,8 @@ from flask.ext.mail import Mail
 from flask.ext.admin import Admin
 from flask.ext.restful import Api, Resource
 from flask_redis import Redis
+import memcache
+
 #from celery import Celery
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -20,6 +22,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 app.jinja_env.globals['momentjs'] = momentjs
 db = SQLAlchemy(app)
+mc = memcache.Client(['127.0.0.1:11211'], debug=0)
 mail = Mail(app)
 redis_store = Redis(app)
 from main.models import User
@@ -32,6 +35,7 @@ login_manager.login_view = "/login"
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
+
 
 from main import models
 from main import views

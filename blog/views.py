@@ -12,10 +12,11 @@ from flask_security.decorators import roles_required
 from main.celery.tasks import add
      
 from main import db, redis_store
-from main.models import User, Post, Category, Comments, Tags, Votes
-from main import app
+from main.models import User, Post, Category, Comments, Tags, Votes, UserManager, PostManager
+from main import app, mc
 from blog.forms import CreatePostForm
 from blog import blog
+from main.paginateModel import PaginateObject
 
 
 
@@ -28,11 +29,24 @@ def index(page = 1):
     Keyword arguments:
     page -- the number of page
     """
-    if current_user.is_authenticated():
-        print "token is: %s" % current_user.get_auth_token()
-    posts = Post.query.filter(Post.status==1) \
-                      .order_by(Post.created_at.desc()) \
-                      .paginate(page, app.config['POSTS_PER_PAGE'], False)  # @UndefinedVariable   
+    key="index%s" % page
+    cached_page = mc.get("page")
+    if not cached_page:
+        cached_page = 0
+    print  cached_page
+    if page > cached_page:
+        mc.set("page", page, 3600)
+    posts = mc.get(key)
+    if not posts:
+        print "not in cache"
+        posts = Post.query.filter(Post.status==1) \
+                          .order_by(Post.created_at.desc()) \
+                          .paginate(page, app.config['POSTS_PER_PAGE'], False)  # @UndefinedVariable  
+        post_m = PostManager()                  
+        data  = post_m.get_post_data(posts)   
+        mc.set(key, data, 3600)
+        posts = data 
+    print posts['post_details'][0]['post'].title             
     return render_template('index.html', posts=posts) 
 
 @blog.route('/index2', methods = ['GET'])
@@ -44,7 +58,7 @@ def index2(page = 1):
     #redis_store.push('potato','Not Set')
     user = User()
     print "documentation"
-    print user.posts_by_user.__doc__
+    #print user.posts_by_user.__doc__
     key="index%s" % page
     print key
     if redis_store.connection.exists(key):
@@ -80,8 +94,10 @@ def posts_by_category(category, page = 1):
     category -- the name of category
     """
     post = Post()  
-    posts = post.posts_category_status(category, 1).paginate(page, app.config['POSTS_PER_PAGE'], False)    
-    return render_template('posts_categories.html', category=category, posts=posts) 
+    posts = post.posts_category_status(category, 1).paginate(page, app.config['POSTS_PER_PAGE'], False) 
+    post_m = PostManager()   
+    posts_data  = post_m.get_post_data(posts, True)    
+    return render_template('posts_categories.html', category=category, posts=posts_data) 
 
 
 @blog.route('/tag/<tag>')
@@ -94,8 +110,10 @@ def posts_by_tag(tag, page = 1):
     tag -- the name of tag
     """ 
     post = Post()  
-    posts = post.posts_tag_status(tag, 1).paginate(page, app.config['POSTS_PER_PAGE'], False)       
-    return render_template('post_tag.html', tag=tag, posts=posts)  
+    posts = post.posts_tag_status(tag, 1).paginate(page, app.config['POSTS_PER_PAGE'], False) 
+    post_m = PostManager()   
+    posts_data  = post_m.get_post_data(posts, True)   
+    return render_template('post_tag.html', tag=tag, posts=posts_data)  
 
 
 @blog.route('/user/<username>')
@@ -111,22 +129,29 @@ def show_user(username, page=1):
     category -- the name of category
     """
     user = User.query.filter_by(username=username).first_or_404()  # @UndefinedVariable
-    user_posts = user.posts_by_user(1).paginate(page, app.config['POSTS_PER_PAGE'], False)
-    pending_posts = user.posts_by_user(0).all()
-    rejected_posts = user.posts_by_user(2).all()
-    posts = user.user_stream(1).paginate(page, app.config['POSTS_PER_PAGE'], False) 
+    user_m = UserManager(id=user.id)
+    user_posts = user_m.posts_by_user(1).paginate(page, app.config['POSTS_PER_PAGE'], False)
+    pending_posts = user_m.posts_by_user(0).all()
+    rejected_posts = user_m.posts_by_user(2).all()
+    posts = user_m.user_stream(1).paginate(page, app.config['POSTS_PER_PAGE'], False) 
+    post_m = PostManager() 
     if current_user.is_authenticated():
         if current_user.username == username:
             head = "Latest posts from you and people you follow "
+                                     
+            pending_posts_data  = post_m.get_post_data(pending_posts, False) 
+            rejected_posts_data  = post_m.get_post_data(rejected_posts, False) 
+            posts_data  = post_m.get_post_data(posts, True)
             return render_template('user_details.html', 
-                                   user=user, posts=posts, 
-                                   pending_posts=pending_posts, 
-                                   rejected_posts=rejected_posts, 
+                                   user=user, posts=posts_data, 
+                                   pending_posts=pending_posts_data, 
+                                   rejected_posts=rejected_posts_data, 
                                    head=head,
                                    different_user = 0)
     #else:
     head = "Latest posts made by %s " % username
-    return render_template('user_details.html', user=user, posts=user_posts, head = head, different_user = 1)
+    posts_data  = post_m.get_post_data(user_posts, True)
+    return render_template('user_details.html', user=user, posts=posts_data, head = head, different_user = 1)
  
     
 @blog.route('/create_post', methods=['GET', 'POST'])
@@ -135,6 +160,20 @@ def create_post():
     """Renders page to create a new post.
     Saves the post in the database.
     """
+    cached_page = mc.get("page")
+    print "in create post"
+    print cached_page
+    index = cached_page + 1
+    print index
+    if cached_page:
+        print "exists"
+        for i in range(1, index, 1):
+            print "in loop"
+            key = "index%s" % i
+            print key
+            mc.delete(key)
+        mc.set("page",1)
+    print mc.get("index1")    
     form = CreatePostForm() 
     if form.validate_on_submit():
         categories = form.categories.data

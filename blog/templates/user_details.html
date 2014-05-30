@@ -48,15 +48,15 @@
 	<div class="clear"></div>	
 {% endif %}	
  {% if different_user == 0 %}
- 	{% if pending_posts %}
+ 	{% if pending_posts.post_details %}
 		{{ lists.build_list("Pending Posts", pending_posts) }}
 	{% endif %}
-	{% if rejected_posts %}
+	{% if rejected_posts.post_details %}
 		{{ lists.build_list("Rejected Posts", rejected_posts) }}
 	{% endif %}
  {% endif %}	
 	
-	{{ lists.build_list(head, posts.items) }}
+	{{ lists.build_list(head, posts) }}
 	
 	{% if posts.has_prev %}<a href="{{ url_for('blog.show_user', username =user.username, page = posts.prev_num) }}"><< Newer posts</a>{% else %}<< Newer posts{% endif %} | 
 	{% if posts.has_next %}<a href="{{ url_for('blog.show_user', username =user.username, page = posts.next_num) }}">Older posts >></a>{% else %}Older posts >>{% endif %}

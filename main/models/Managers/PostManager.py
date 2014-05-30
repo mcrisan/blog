@@ -1,56 +1,20 @@
 from datetime import datetime
 
 from main.models.Comments import Comments
+from main.models.Post import Post
 from main.models.Category import Category
 from main.models.Tags import Tags
 from main.models.AsociateTables import post_tag, post_cat
 from main.models.User import User
 from main import db, mc
 
-class Post(db.Model):
-    """Creates the post model
+class PostManager():
     
-    Functions:
-    dump_datetime -- Deserialize datetime object into string form for JSON processing.
-    serialize -- Creates a dict from post object
-    serialize2 -- Creates a dict from post object
-    top_posts -- Returns top posts by the number of comments
-    posts_category_status -- Returns posts from category, based on post status
-    posts_tag_status -- Returns from tags, based on post status
-    get_comments_by_post -- Returns comments from post
-    check_category -- Returnd s list with categories assigned to a post
-    """
-    __tablename__ = 'post'
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(50))
-    excerpt = db.Column(db.String(200))
-    description = db.Column(db.Text())
-    image = db.Column(db.String(100))
-    created_at = db.Column(db.DateTime(), default= datetime.now())
-    updated_at = db.Column(db.DateTime(), onupdate=datetime.now())
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    categories = db.relationship('Category', secondary=post_cat,
-        backref=db.backref('posts', lazy='dynamic'))
-    comments = db.relationship("Comments", backref="pcomments")
-    tags = db.relationship('Tags', secondary=post_tag,
-        backref=db.backref('tposts', lazy='dynamic'))
-    status = db.Column(db.Integer)
-    
-    def __init__(self, title=None, excerpt=None, description=None, 
-                 image=None, user_id=None, categories=[], tags=[], status=0):
-        self.title = title
-        self.excerpt = excerpt
-        self.description = description
-        self.image = image
-        self.user_id = user_id
-        self.categories = categories
-        self.tags = tags
-        self.status = status
+    id = None
+    def __init__(self, post_id=None):
+        self.id = post_id
 
-    def __repr__(self):
-        return '%s' % self.title   
-    
-            
+        
     def get_categories(self):
         key= "post%dcat" % self.id
         categories = mc.get(key)
@@ -61,11 +25,11 @@ class Post(db.Model):
             mc.set(key, categories.all())
         return categories
     
-    def get_user_post(self):
+    def get_user_post(self, user_id):
         key= "post%duser" % self.id
         user = mc.get(key)
         if not user:
-            user = User.query.get(self.user_id) 
+            user = User.query.get(user_id) 
             mc.set(key, user)
         return user 
     
@@ -84,6 +48,34 @@ class Post(db.Model):
             tags = Tags.query.join(post_tag, Tags.id==post_tag.c.tag_id).join(Post, Post.id==post_tag.c.post_id).filter(Post.id==self.id).all()
             mc.set(key, tags)
         return tags 
+    
+    def get_post_data(self, posts, pag=True):
+        post_data=[]
+        if pag is True: 
+            print " is true"
+            posts_list = posts.items
+        else:
+            posts_list = posts    
+        for post in posts_list:
+            post_m = PostManager(post.id)
+            post_det={"post" : post,
+                  "user" : post_m.get_user_post(post.user_id),
+                  "categories" : post_m.get_categories(),
+                  "comments" : post_m.get_post_comments(),
+                  "tags"     : post_m.get_post_tags()
+                  }
+            post_data.append(post_det)
+        if pag is True:    
+            data = {"post_details" : post_data,
+                    "has_prev"     : posts.has_prev,
+                    "has_next"     : posts.has_next,
+                    "prev_num"     : posts.prev_num,
+                    "next_num"     : posts.next_num
+                    }
+        else:
+            data = {"post_details" : post_data
+                }    
+        return data
             
     def dump_datetime(self, value):
         """Deserialize datetime object into string form for JSON processing."""

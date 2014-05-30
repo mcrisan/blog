@@ -2,45 +2,45 @@
 {% import 'categories_macro.html' as category %}
 
 <h2 class="cufon-h2"><span>{{header}}</span></h2>
-	{% for post in posts_list %}
+	{% for post_data in posts_list.post_details %}
 		<div class="post">
-			<h3><a href="{{ url_for('blog.post_details', id=post.id) }}">{{post.title}}</a></h3>
+			<h3><a href="{{ url_for('blog.post_details', id=post_data.post.id) }}">{{post_data.post.title}}</a></h3>
 			<div class="cat-date">
 				<span class="posted">Posted in: </span>
-					{{ category.categories(post.categories) }}
+					{{ category.categories(post_data.categories) }}
 					<!--<em><a href="#">Category One</a></em> -->
 				<span class="sep"></span>
 				<span class="date">Published: 
-					<em>{{momentjs(post.created_at).fromNow()}}</em> 
+					<em>{{momentjs(post_data.post.created_at).fromNow()}}</em> 
 				</span>
 			</div><!-- .cat-date -->
 			<div class="post-teaser">
-				<img src="{{ post.image }}" width="142" height="140" alt="" />
+				<img src="{{ post_data.post.image }}" width="142" height="140" alt="" />
 					<div class="text">
-					<p>{{post.excerpt}}</p>
+					<p>{{post_data.post.excerpt}}</p>
 					<div class="readMore">
 						<span>Author: </span>
-						<em><a href="{{ url_for('blog.show_user', username=post.users.username) }}">{{post.users.username}} </a> |</em>
-						{% if (g.user.is_authenticated()) and (g.user != post.users) %}
-							{% if g.user.is_following(post.users) %}
-							<em><a href="{{ url_for('users.unfollow_user', id=post.users.id) }}">Unfollow</a> |</em>				
+						<em><a href="{{ url_for('blog.show_user', username=post_data.user.username) }}">{{post_data.user.username}} </a> |</em>
+						{% if (g.user.is_authenticated()) and (g.user != post_data.user) %}
+							{% if g.user.is_following(post_data.user) %}
+							<em><a href="{{ url_for('users.unfollow_user', id=post_data.user.id) }}">Unfollow</a> |</em>				
 							{% else %}
-							<em><a href="{{ url_for('users.follow_user', id=post.users.id) }}">Follow</a> |</em>
+							<em><a href="{{ url_for('users.follow_user', id=post_data.user.id) }}">Follow</a> |</em>
 							{% endif %}
-							<em><a href="{{ url_for('users.send_message') }}?id={{post.users.id}}">Send Message</a></em><br />
+							<em><a href="{{ url_for('users.send_message') }}?id={{post_data.user.id}}">Send Message</a></em><br />
 						{% else %}
 						 <br />	
 						{% endif %}	
 						<span>Reaction: </span>
-						<em><a href="{{ url_for('blog.post_details', id=post.id) }}#comments">{{post.comments|length}} comments</a></em> <br/>
+						<em><a href="{{ url_for('blog.post_details', id=post_data.post.id) }}#comments">{{post_data.comments|length}} comments</a></em> <br/>
 						<em>Tags: 
-					   		{% for tag in post.tags %}
+					   		{% for tag in post_data.tags %}
 					   			<span class="tag"><a href="{{ url_for('blog.posts_by_tag', tag=tag.name)}}">{{ tag.name }}</a></span>
 							{% else %}
 								This post has no tags. 
 							{% endfor %}
 						</em>
-						<em class="readMoreButton"><a href="{{ url_for('blog.post_details', id=post.id) }}">Read More</a></em>
+						<em class="readMoreButton"><a href="{{ url_for('blog.post_details', id=post_data.post.id) }}">Read More</a></em>
 					</div><!-- .readMore -->
 				</div><!-- .text -->
 			</div><!-- .post-teaser -->

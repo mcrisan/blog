@@ -5,3 +5,4 @@ flask-security
 flask-redis
 Flask-Script
 celery[redis]==3.1.11
+python-memcached==1.53

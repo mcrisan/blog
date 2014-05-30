@@ -1,7 +1,9 @@
 
 from main.models.User import User
+from main.models.Managers import UserManager
 from main.models.Role import Role
 from main.models.Post import Post
+from main.models.Managers import PostManager
 from main.models.Tags import Tags
 from main.models.Comments import Comments
 from main.models.Category import Category
