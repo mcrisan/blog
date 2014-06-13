@@ -6,6 +6,15 @@ from main.models.Comments import Comments
 from main.models.Message import Message
 
 class UserManager(): 
+    """Creates the operations a user can make
+    
+    Functions:
+    posts_by_user -- Returns a list with posts made by a user
+    top_users -- Returns users with most posts
+    top_comments -- Return most liked comments
+    messages -- Returns messages exchange by users
+    user_stream -- Returns posts from the people the user follows
+    """
     id=None
     
     def __init__(self, id=None):
@@ -46,9 +55,8 @@ class UserManager():
         return db.session.query(Comments.id, 
                                 Comments.comment, 
                                 Comments.likes, 
-                                User,
-                                #User.username,#.label('username'), 
-                                User.id,#.label('user_id'), 
+                                User, 
+                                User.id, 
                                 Comments.post_id 
                                 ) \
                          .join(User, User.id==Comments.user_id) \

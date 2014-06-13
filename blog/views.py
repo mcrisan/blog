@@ -1,6 +1,4 @@
 import re
-import json
-import pprint
 from datetime import datetime
 from elasticsearch import Elasticsearch
 from werkzeug.exceptions import abort
@@ -8,11 +6,9 @@ from werkzeug.exceptions import abort
 from flask import request, g, redirect, url_for, \
      render_template, flash, jsonify
 from flask.ext.security import login_required, current_user
-from flask_security.decorators import roles_required
-from main.celery.tasks import add
      
-from main import db, redis_store
-from main.models import User, Post, Category, Comments, Tags, Votes, UserManager, PostManager, \
+from main import db
+from main.models import User, Post, Category, Comments, Votes, UserManager, PostManager, \
                         TagsManager, CommentsManager, CategoryManager
 from main import app, mc
 from blog.forms import CreatePostForm
@@ -37,44 +33,14 @@ def index(page = 1):
         mc.set("page", page, 3600)
     posts = mc.get(key)
     if not posts:
-        print "not in cache"
         posts = Post.query.filter(Post.status==1) \
                           .order_by(Post.created_at.desc()) \
                           .paginate(page, app.config['POSTS_PER_PAGE'], False)  # @UndefinedVariable  
         post_m = PostManager()                  
         data  = post_m.get_post_data(posts)   
         mc.set(key, data, 3600)
-        posts = data 
-    print posts['post_details'][0]['post'].title             
+        posts = data           
     return render_template('index.html', posts=posts) 
-
-@blog.route('/index2', methods = ['GET'])
-@blog.route('/index2/<int:page>', methods = ['GET'])
-def index2(page = 1):
-    result =add.delay(4, 4)
-    print result.get()
-    key="index%s" % page
-    print key
-    if redis_store.connection.exists(key):
-        print "redis saved data"
-        posts = redis_store.connection.get(key)
-        redis_store.connection.delete(key)
-        decoded_data = json.loads(posts)
-        pprint.pprint(decoded_data['posts'][0])
-    else:
-        posts = Post.query.filter(Post.status==1) \
-                      .order_by(Post.created_at.desc()) \
-                      .paginate(page, app.config['POSTS_PER_PAGE'], False)  # @UndefinedVariable
-        data = posts.items
-        post_list =[]
-        for post in data:
-            post2 = post.serialize2()
-            post_list.append(post2)
-        json_data = { 'posts': post_list } 
-        data2 = json.dumps(json_data)    
-        redis_store.connection.set(key, data2)  
-    return render_template('index.html', posts=posts)  
-
 
 @blog.route('/cat/<category>')
 @blog.route('/cat/<category>/<int:page>', methods = ['GET'])
@@ -89,7 +55,6 @@ def posts_by_category(category, page = 1):
     posts = post_m.posts_category_status(category, 1).paginate(page, app.config['POSTS_PER_PAGE'], False)    
     posts_data  = post_m.get_post_data(posts, True)    
     return render_template('posts_categories.html', category=category, posts=posts_data) 
-
 
 @blog.route('/tag/<tag>')
 @blog.route('/tag/<tag>/<int:page>', methods = ['GET'])
@@ -127,8 +92,7 @@ def show_user(username, page=1):
     post_m = PostManager() 
     if current_user.is_authenticated():
         if current_user.username == username:
-            head = "Latest posts from you and people you follow "
-                                     
+            head = "Latest posts from you and people you follow "                                    
             pending_posts_data  = post_m.get_post_data(pending_posts, False) 
             rejected_posts_data  = post_m.get_post_data(rejected_posts, False) 
             posts_data  = post_m.get_post_data(posts, True)
@@ -150,20 +114,6 @@ def create_post():
     """Renders page to create a new post.
     Saves the post in the database.
     """
-    cached_page = mc.get("page")
-    print "in create post"
-    print cached_page
-    index = cached_page + 1
-    print index
-    if cached_page:
-        print "exists"
-        for i in range(1, index, 1):
-            print "in loop"
-            key = "index%s" % i
-            print key
-            mc.delete(key)
-        mc.set("page",1)
-    print mc.get("index1")    
     form = CreatePostForm() 
     if form.validate_on_submit():
         categories = form.categories.data
@@ -184,14 +134,19 @@ def create_post():
         try:
             db.session.commit()  # @UndefinedVariable
             es = Elasticsearch()
-            es.index(index="post", doc_type='pesan', id=post.id, body=post.serialize2())
-            flash(u'Post was succesfully created')  
+            es.index(index="post", doc_type='pesan', id=post.id, body=post.serialize2()) 
+            cached_page = mc.get("page")
+            index = cached_page + 1
+            if cached_page:
+                for i in range(1, index, 1):
+                    key = "index%s" % i
+                    mc.delete(key)
+                mc.set("page",1)   
         except:
             return redirect(url_for('blog.create_post'))
         return redirect(url_for('blog.index'))       
     return render_template('create_post.html', form=form)    
-
-    
+ 
 @blog.route('/post/<id>', methods=['GET', 'POST'])
 def post_details(id):
     """Renders the post page
@@ -304,7 +259,8 @@ def unlike_comment():
 @blog.route('/featured_posts', methods=['GET','POST'])
 def featured_posts():
     """Renders top posts"""
-    top_posts = Post.top_posts().all()
+    post_m = PostManager()
+    top_posts = post_m.top_posts().all()
     data=[]
     for post in top_posts:
         post_json = {
@@ -418,7 +374,7 @@ def autocomplete():
     list_title =[]
     for data in res['hits']['hits']: 
         list_title.append({
-                           'title'      : data['_source']['title'],
+                           'title'   : data['_source']['title'],
                            'id'      : data['_source']['id']
                            } )   
     return jsonify( { 'posts': list_title } )    

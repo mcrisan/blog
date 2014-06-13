@@ -1,6 +1,12 @@
 from main.models.Tags import Tags
 
 class TagsManager():
+    """Creates the operations with tags
+    
+    Functions:
+    list_of_tags -- Returns a list of tags.
+    str_tags -- Returns all tag names as a string.
+    """
     def list_of_tags(self, tags):
         """Returns a list of tags
         

@@ -5,9 +5,6 @@ from main import db
 
 class Comments(db.Model):
     """Creates the comments model
-   
-    Functions:
-    vote_status -- Returns the vote if existe and none otherwise
     """
     __tablename__ = 'comments'  
     id = db.Column(db.Integer, primary_key=True)

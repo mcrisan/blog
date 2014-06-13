@@ -4,6 +4,12 @@ from main.models.Category import Category
 from main.models.Post import Post
 
 class CategoryManager():
+    """Creates the operations for category
+    
+    Functions:
+    list_of_categories -- Returns list of categories from a list of names
+    category_count -- Returns the number of posts for each category
+    """
     def list_of_categories(self, categories):
         """Returns list of categories from a list of names
         

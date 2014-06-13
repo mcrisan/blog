@@ -1,7 +1,6 @@
 import oauth2 as oauth
 import cgi
 import urllib
-import pprint
 import facebook
 
 from flask import request, session, g, redirect, url_for, \
@@ -35,33 +34,7 @@ def user_login():
 @security.login_context_processor
 def security_context_processor():
     form = LoginForm()
-    return dict(form=form)
-
-@mainapp.route('/ftest', methods=['GET', 'POST'])
-def ftest():
-    user = User.query.get(2)
-    if user:
-        token = user.token
-        graph = facebook.GraphAPI(token)
-        attachment = {"name": "Nature at it;s best",
-                       "link": "newsm8.com",
-                       "caption": "actor posted a new review",
-                       "description": "This is a longer description of the attachment",
-                       "picture": "http://www.seeanz.com/images/albino-wallaby.jpg"}
-        graph.put_wall_post("Nature at it;s best", attachment)
-        profile = graph.get_object("me")  
-    return "123 "
-
-@mainapp.route('/ftest2', methods=['GET', 'POST'])
-def ftest2():
-    user = User.query.get(2)
-    if user:
-        token = user.token
-        graph = facebook.GraphAPI(token)
-        pages = graph.get_object("me/accounts")
-  
-        pprint.pprint(pages["data"]) 
-    return render_template('facebook_pages.html', pages=pages["data"])          
+    return dict(form=form)     
 
 @mainapp.route('/facebook_login', methods=['GET', 'POST'])
 def facebook_login():

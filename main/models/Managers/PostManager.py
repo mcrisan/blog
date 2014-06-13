@@ -8,7 +8,15 @@ from main.models.AsociateTables import post_tag, post_cat
 from main.models.User import User
 
 class PostManager():
+    """Creates the operations for posts
     
+    Functions:
+    top_posts -- Returns top posts by the number of comments
+    posts_category_status -- Returns posts from category, based on post status
+    posts_tag_status -- Returns from tags, based on post status
+    get_comments_by_post -- Returns comments from post
+    check_category -- Returnd s list with categories assigned to a post
+    """
     id = None
     def __init__(self, post_id=None):
         self.id = post_id

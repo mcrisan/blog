@@ -12,7 +12,6 @@ from flask.ext.restful import Api, Resource
 from flask_redis import Redis
 import memcache
 
-#from celery import Celery
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 mainapp = Blueprint('main', __name__, template_folder='templates')

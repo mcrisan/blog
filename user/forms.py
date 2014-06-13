@@ -1,9 +1,7 @@
 from flask_wtf import Form
-from flask.ext.wtf.html5 import EmailField, URLField
-#from flask.ext.wtf import widgets, SelectMultipleField
-from wtforms import TextField, PasswordField, TextAreaField, SelectMultipleField, widgets, HiddenField
-from wtforms.validators import Required, url
-from main.models import User, Post, Category
+from wtforms import TextField, TextAreaField
+from wtforms.validators import Required
+from main.models import User
 from flask.ext.login import current_user
 
 class SendMessage(Form):
@@ -13,14 +11,13 @@ class SendMessage(Form):
 
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
-        #self.user = User
+
     def validate(self):
         rv = Form.validate(self)
         if not rv:
             return False
 
-        user = User.query.filter_by(username=self.to_user.data).first()
-        #print  user    
+        user = User.query.filter_by(username=self.to_user.data).first()   
         if not user:  
             self.to_user.errors.append('User was not found')
             return False

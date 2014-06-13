@@ -15,11 +15,6 @@ class User(db.Model, UserMixin):
     is_authenticated -- Returns true if the user is loged in
     is_admin -- Returns true if the user is admin
     get_id -- Returns the id of the logged in user
-    posts_by_user -- Returns a list with posts made by a user
-    top_users -- Returns users with most posts
-    top_comments -- Return most liked comments
-    messages -- Returns messages exchange by users
-    user_stream -- Returns posts from the people the user follows
     unfollow -- Unfollow a user and return the user object
     is_following --Checks if a user is following another user
     get_username_by_id -- Returns the username of the user
@@ -63,8 +58,6 @@ class User(db.Model, UserMixin):
     
     def is_active(self):
         """Returns true if the logged in user is active"""
-        # Here you should write whatever the code is
-        # that checks the database if your user is active
         return True
 
     def is_anonymous(self):

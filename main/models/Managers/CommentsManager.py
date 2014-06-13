@@ -1,6 +1,11 @@
 from main.models.votes import Votes
 
 class CommentsManager():
+    """Creates the operations for comments
+   
+    Functions:
+    vote_status -- Returns the vote if exists and none otherwise
+    """
     id =None
     
     def __init__(self, id):

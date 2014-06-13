@@ -1,11 +1,8 @@
 from main import db
 
+
 class Tags(db.Model):
     """Creates the blog tags model
-    
-    Functions:
-    list_of_tags -- Returns a list of tags.
-    str_tags -- Returns all tag names as a string.
     """
     __tablename__ = 'tags' 
     id = db.Column(db.Integer, primary_key=True)

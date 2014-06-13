@@ -1,4 +1,3 @@
-import pprint
 from datetime import datetime
 
 from flask import request, g, redirect, url_for, \
@@ -96,8 +95,7 @@ def send_conv_response(conv=0):
 @login_required
 def view_messages(page = 1):
     user_m = UserManager(current_user.id)
-    messages = user_m.messages().all()#.paginate(page, app.config['POSTS_PER_PAGE'], False)
-    #return "111"
+    messages = user_m.messages().all()
     return render_template('user/view_messages.html', messages=messages)
 
 @users.route('/user/conversation/<int:from_user>/<int:to_user>', methods = ['GET', 'POST'])
@@ -112,13 +110,4 @@ def view_conversation(from_user, to_user):
                                            db.and_(Message.from_user_id==from_user, Message.to_user_id==to_user), 
                                            db.and_(Message.from_user_id==to_user, Message.to_user_id==from_user))) \
                       .order_by(Message.date.desc()).all()
-    #return "111"
     return render_template('user/conversation.html', messages=messages, username=username)
- 
-@users.route('/user/test/<id>')
-@login_required
-def test_user(id):
-    user= User.query.get(id)
-    data = user.user_stream2().all()
-    pprint.pprint(data)
-    return "123"
